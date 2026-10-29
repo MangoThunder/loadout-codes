@@ -55,6 +55,8 @@
     return parseFloat(m[1]) * ({ k: 1e3, m: 1e6 }[(m[2] || "").toLowerCase()] || 1);
   };
   const costText = (b) => (b.cost ? `${b.cost}${cfg.currency ? " " + cfg.currency : ""}` : "");
+  // Tier badge only shows for builds that have a tier set in builds.js.
+  const tierBadge = (b) => (b.tier ? `<span class="tier tier-${tierKey(b.tier)}">${esc(b.tier)}</span>` : "");
   const metaLine = (b, extra) => [b.role, costText(b), extra].filter(Boolean).map(esc).join(" · ");
   const initials = (name) =>
     String(name)
@@ -137,7 +139,7 @@
           <aside class="featured" aria-label="Featured build">
             <div class="featured-top">
               <span class="eyebrow">Featured build</span>
-              <span class="tier tier-${tierKey(featured.tier)}">${esc(featured.tier)}</span>
+              ${tierBadge(featured)}
             </div>
             <h2 class="featured-name">${esc(featured.weapon)}</h2>
             <p class="featured-meta">${[esc(featured.category), metaLine(featured)].filter(Boolean).join(" · ")}</p>
@@ -156,7 +158,7 @@
           <div class="selects">
             ${roles.length ? selectHTML("role", "Range", [{ value: "All", label: "Any range" }, ...roles.map((r) => ({ value: r, label: r }))], state.role) : ""}
             ${selectHTML("sort", "Sort", [
-              { value: "featured", label: "Best first" },
+              { value: "featured", label: "Default order" },
               ...(lastUpdated ? [{ value: "newest", label: "Recently updated" }] : []),
               ...(builds.some((b) => b.cost) ? [{ value: "cheapest", label: "Cheapest first" }] : []),
               { value: "az", label: "A to Z" }
@@ -236,7 +238,7 @@
     return `<article class="card" data-id="${esc(b.id)}">
       <div class="card-head">
         <div class="card-tags">
-          <span class="tier tier-${tierKey(b.tier)}">${esc(b.tier)}</span>
+          ${tierBadge(b)}
           <span class="cat">${esc(b.category)}</span>
         </div>
         <button type="button" class="icon-btn fav${fav ? " is-on" : ""}" data-fav="${esc(b.id)}" aria-pressed="${fav}" aria-label="${fav ? "Remove from saved" : "Save build"}">${icon.star}</button>
@@ -298,7 +300,7 @@
     return `
       <div class="modal-head">
         <div class="card-tags">
-          <span class="tier tier-${tierKey(b.tier)}">${esc(b.tier)}</span>
+          ${tierBadge(b)}
           <span class="cat">${esc(b.category)}</span>
         </div>
         <div class="modal-actions">
