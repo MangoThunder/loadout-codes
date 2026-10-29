@@ -27,13 +27,13 @@ window.GUN_BUILDS = {
   config: {
     name: "YourStreamer",
     game: "Delta Force",
-    twitch: "yourchannel",          // twitch.tv/<this>
+    twitch: "siingsong",               // twitch.tv/<this>
     tagline: "The exact Operations loadouts I run on stream. Copy a code, import it in the Gunsmith, deploy.",
     currency: "Koen",               // shown after build costs
     live: false,                    // true shows a red LIVE badge in the header
     showSampleNotice: true,         // set to false once real builds are in
     socials: [
-      { label: "Twitch", url: "https://www.twitch.tv/yourchannel" },
+      { label: "Twitch", url: "https://www.twitch.tv/siingsong" },
       { label: "YouTube", url: "https://www.youtube.com/" },
       { label: "X", url: "https://x.com/" },
       { label: "Discord", url: "https://discord.com/" }
