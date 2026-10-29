@@ -54,7 +54,14 @@ window.GUN_BUILDS = {
   },
 
   builds: [
-    // Imported from "Siing's Builds" Google Sheet
+    { id: "k437", weapon: "K437", category: "Assault Rifle", image: "images/guns/k437.webp",
+      calibration: "images/guns/k437-calibration.webp",
+      code: "K437 Assault Rifle-Operations (Extraction Mode)-6LH29G00F1274DR0HHHLC" }
+  ],
+
+  // Not shown on the site: these codes have no View build or Calibration screenshot yet.
+  // To bring one back, move it into "builds" above and add its image/calibration.
+  waiting: [
     { id: "ar-57", weapon: "AR-57", category: "Assault Rifle",
       code: "AR-57 Assault Rifle-Operations-6KGTNS8014H9D6PDMV79E" },
     { id: "ci-19", weapon: "CI-19", category: "Assault Rifle",
@@ -93,9 +100,6 @@ window.GUN_BUILDS = {
       code: "AKM Assault Rifle-Operations-6GV963C01OANMAF97OV6I" },
     { id: "m4a1", weapon: "M4A1", category: "Assault Rifle",
       code: "M4A1 Assault Rifle-Operations-6KR2DOC014H9D6PDMV79E" },
-    { id: "k437", weapon: "K437", category: "Assault Rifle", image: "images/guns/k437.webp",
-      calibration: "images/guns/k437-calibration.webp",
-      code: "K437 Assault Rifle-Operations (Extraction Mode)-6LH29G00F1274DR0HHHLC" },
     { id: "kc17", weapon: "KC17", category: "Assault Rifle",
       code: "KC-17 Assault Rifle-Operations-6KKOO34014H9D6PDMV79E" },
     { id: "mk47", weapon: "MK47", category: "Assault Rifle",
