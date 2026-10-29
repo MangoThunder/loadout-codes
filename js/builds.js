@@ -65,7 +65,10 @@ window.GUN_BUILDS = {
       code: "K437 Assault Rifle-Operations (Extraction Mode)-6LH29G00F1274DR0HHHLC" },
     { id: "mdr", weapon: "MDR", category: "Assault Rifle", image: "images/guns/mdr.webp",
       calibration: "images/guns/mdr-calibration.webp",
-      code: "MDR Assault Rifle-Operations (Extraction Mode)-6LEFLPK0F1274DR0HHHLC" }
+      code: "MDR Assault Rifle-Operations (Extraction Mode)-6LEFLPK0F1274DR0HHHLC" },
+    { id: "mk4", weapon: "MK4", category: "SMG", image: "images/guns/mk4.webp",
+      calibration: "images/guns/mk4-calibration.webp",
+      code: "MK4 Submachine Gun-Operations (Extraction Mode)-6LJSPAO0F1274DR0HHHLC" }
   ],
 
   // Not shown on the site: these codes have no View build or Calibration screenshot yet.
@@ -131,8 +134,6 @@ window.GUN_BUILDS = {
       code: "MP5 Submachine Gun-Operations-6F12U5G0A343VCRUF2MBP" },
     { id: "qcq171", weapon: "QCQ171", category: "SMG",
       code: "QCQ171 Submachine Gun-Operations-6KKPKGS014H9D6PDMV79E" },
-    { id: "mk4", weapon: "MK4", category: "SMG",
-      code: "MK4 Submachine Gun-Operations-6KN4OQS014H9D6PDMV79E" },
     { id: "m249", weapon: "M249", category: "LMG",
       code: "M249 Light Machine Gun-Operations-6EV840S096H0J29AJAHPA" },
     { id: "pkm", weapon: "PKM", category: "LMG",
