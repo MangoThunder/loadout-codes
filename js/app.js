@@ -3,7 +3,7 @@
 
   const data = window.GUN_BUILDS || { config: {}, builds: [] };
   const cfg = Object.assign(
-    { name: "Streamer", avatar: "", game: "Delta Force", twitch: "", tagline: "", currency: "", live: false, showSampleNotice: false, socials: [] },
+    { name: "Streamer", avatar: "", gunImages: "", game: "Delta Force", twitch: "", tagline: "", currency: "", live: false, showSampleNotice: false, socials: [] },
     data.config
   );
   const builds = (data.builds || []).map((b) => Object.assign({ attachments: [], tags: [] }, b));
@@ -57,6 +57,13 @@
   const costText = (b) => (b.cost ? `${b.cost}${cfg.currency ? " " + cfg.currency : ""}` : "");
   // Tier badge only shows for builds that have a tier set in builds.js.
   const tierBadge = (b) => (b.tier ? `<span class="tier tier-${tierKey(b.tier)}">${esc(b.tier)}</span>` : "");
+  // Gun pictures: a build's own "image", or <gunImages folder>/<id>.png. The frame stays
+  // hidden until the picture actually loads, so guns without one look unchanged.
+  const imageSrc = (b) => b.image || (cfg.gunImages ? cfg.gunImages.replace(/\/?$/, "/") + b.id + ".png" : "");
+  const gunImage = (b, size) => {
+    const src = imageSrc(b);
+    return src ? `<div class="gun-img ${size || ""}" hidden><img src="${esc(src)}" alt="${esc(b.weapon)}" decoding="async"></div>` : "";
+  };
   const metaLine = (b, extra) => [b.role, costText(b), extra].filter(Boolean).map(esc).join(" · ");
   const initials = (name) =>
     String(name)
@@ -141,6 +148,7 @@
               <span class="eyebrow">Featured build</span>
               ${tierBadge(featured)}
             </div>
+            ${gunImage(featured, "lg")}
             <h2 class="featured-name">${esc(featured.weapon)}</h2>
             <p class="featured-meta">${[esc(featured.category), metaLine(featured)].filter(Boolean).join(" · ")}</p>
             ${codeBlock(featured, "lg")}
@@ -243,6 +251,7 @@
         </div>
         <button type="button" class="icon-btn fav${fav ? " is-on" : ""}" data-fav="${esc(b.id)}" aria-pressed="${fav}" aria-label="${fav ? "Remove from saved" : "Save build"}">${icon.star}</button>
       </div>
+      ${gunImage(b)}
       <h3 class="card-title"><button type="button" data-open="${esc(b.id)}">${esc(b.weapon)}</button></h3>
       ${metaLine(b) ? `<p class="card-meta">${metaLine(b)}</p>` : ""}
       ${shown.length ? `<ul class="att-list">
@@ -308,6 +317,7 @@
           <button type="button" class="icon-btn" data-close aria-label="Close">${icon.close}</button>
         </div>
       </div>
+      ${gunImage(b, "lg")}
       <h2 id="modal-title" class="modal-title">${esc(b.weapon)}</h2>
       ${metaLine(b, b.updated ? "Updated " + fmtDate(b.updated) : "") ? `<p class="card-meta">${metaLine(b, b.updated ? "Updated " + fmtDate(b.updated) : "")}</p>` : ""}
       ${codeBlock(b, "lg")}
@@ -425,6 +435,14 @@
   }
 
   // ── events ─────────────────────────────────────────────────
+  // load/error don't bubble, so listen in the capture phase.
+  app.addEventListener("load", (e) => {
+    if (e.target.tagName === "IMG" && e.target.parentElement.classList.contains("gun-img")) e.target.parentElement.hidden = false;
+  }, true);
+  app.addEventListener("error", (e) => {
+    if (e.target.tagName === "IMG" && e.target.parentElement.classList.contains("gun-img")) e.target.parentElement.remove();
+  }, true);
+
   app.addEventListener("click", (e) => {
     const t = e.target.closest("[data-copy],[data-fav],[data-open],[data-close],[data-cat],[data-share],[data-reset],[data-home]");
     if (!t) return;
