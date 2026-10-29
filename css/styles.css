@@ -379,6 +379,7 @@ p { margin: 0; }
 .att-list li { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; font-size: 14px; }
 .att-list .slot { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; padding-top: 2px; }
 .att-list .more .att { color: var(--muted); }
+.card .code-row { margin-top: auto; }
 .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); }
 
 .empty {

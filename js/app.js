@@ -124,13 +124,13 @@
             ${cfg.tagline ? `<p class="lede">${esc(cfg.tagline)}</p>` : ""}
             <div class="search">
               ${icon.search}
-              <input id="search" type="search" placeholder="Search a gun, attachment or code" autocomplete="off" aria-label="Search builds">
+              <input id="search" type="search" placeholder="Search a gun or code" autocomplete="off" aria-label="Search builds">
               <kbd aria-hidden="true">/</kbd>
             </div>
             <dl class="hero-stats">
               <div><dt>Builds</dt><dd>${builds.length}</dd></div>
               <div><dt>Weapon classes</dt><dd>${categories.length}</dd></div>
-              <div><dt>Last updated</dt><dd>${lastUpdated ? esc(fmtDate(lastUpdated)) : "—"}</dd></div>
+              ${lastUpdated ? `<div><dt>Last updated</dt><dd>${esc(fmtDate(lastUpdated))}</dd></div>` : ""}
             </dl>
           </div>
           ${featured ? `
@@ -140,9 +140,9 @@
               <span class="tier tier-${tierKey(featured.tier)}">${esc(featured.tier)}</span>
             </div>
             <h2 class="featured-name">${esc(featured.weapon)}</h2>
-            <p class="featured-meta">${esc(featured.category)} · ${metaLine(featured)}</p>
+            <p class="featured-meta">${[esc(featured.category), metaLine(featured)].filter(Boolean).join(" · ")}</p>
             ${codeBlock(featured, "lg")}
-            <ul class="featured-atts">${featured.attachments.slice(0, 6).map((a) => `<li><span>${esc(a.slot)}</span>${esc(a.name)}</li>`).join("")}</ul>
+            ${featured.attachments.length ? `<ul class="featured-atts">${featured.attachments.slice(0, 6).map((a) => `<li><span>${esc(a.slot)}</span>${esc(a.name)}</li>`).join("")}</ul>` : ""}
             <button class="text-btn" type="button" data-open="${esc(featured.id)}">Full build ${icon.arrow}</button>
           </aside>` : ""}
         </div>
@@ -154,11 +154,11 @@
             ${["All", ...categories].map((c) => `<button type="button" class="chip" data-cat="${esc(c)}" aria-pressed="${c === state.category}">${esc(c === "All" ? "All classes" : c)}</button>`).join("")}
           </div>
           <div class="selects">
-            ${selectHTML("role", "Range", [{ value: "All", label: "Any range" }, ...roles.map((r) => ({ value: r, label: r }))], state.role)}
+            ${roles.length ? selectHTML("role", "Range", [{ value: "All", label: "Any range" }, ...roles.map((r) => ({ value: r, label: r }))], state.role) : ""}
             ${selectHTML("sort", "Sort", [
               { value: "featured", label: "Best first" },
-              { value: "newest", label: "Recently updated" },
-              { value: "cheapest", label: "Cheapest first" },
+              ...(lastUpdated ? [{ value: "newest", label: "Recently updated" }] : []),
+              ...(builds.some((b) => b.cost) ? [{ value: "cheapest", label: "Cheapest first" }] : []),
               { value: "az", label: "A to Z" }
             ], state.sort)}
           </div>
@@ -242,11 +242,11 @@
         <button type="button" class="icon-btn fav${fav ? " is-on" : ""}" data-fav="${esc(b.id)}" aria-pressed="${fav}" aria-label="${fav ? "Remove from saved" : "Save build"}">${icon.star}</button>
       </div>
       <h3 class="card-title"><button type="button" data-open="${esc(b.id)}">${esc(b.weapon)}</button></h3>
-      <p class="card-meta">${metaLine(b)}</p>
-      <ul class="att-list">
+      ${metaLine(b) ? `<p class="card-meta">${metaLine(b)}</p>` : ""}
+      ${shown.length ? `<ul class="att-list">
         ${shown.map((a) => `<li><span class="slot">${esc(a.slot)}</span><span class="att">${esc(a.name)}</span></li>`).join("")}
         ${more > 0 ? `<li class="more"><span class="slot"></span><span class="att">+${more} more</span></li>` : ""}
-      </ul>
+      </ul>` : ""}
       ${codeBlock(b)}
       <div class="card-foot">
         <span>${b.updated ? "Updated " + esc(fmtDate(b.updated)) : ""}</span>
@@ -277,7 +277,7 @@
   function resetFilters() {
     Object.assign(state, { q: "", category: "All", role: "All", favsOnly: false });
     search.value = "";
-    $("#role").value = "All";
+    if ($("#role")) $("#role").value = "All";
     render();
   }
 
@@ -307,17 +307,17 @@
         </div>
       </div>
       <h2 id="modal-title" class="modal-title">${esc(b.weapon)}</h2>
-      <p class="card-meta">${metaLine(b, b.updated ? "Updated " + fmtDate(b.updated) : "")}</p>
+      ${metaLine(b, b.updated ? "Updated " + fmtDate(b.updated) : "") ? `<p class="card-meta">${metaLine(b, b.updated ? "Updated " + fmtDate(b.updated) : "")}</p>` : ""}
       ${codeBlock(b, "lg")}
       <p class="how-to">In Operations, open the ${esc(b.weapon)} in the Gunsmith, choose Import and paste the code.</p>
       <button type="button" class="text-btn share" data-share="${esc(b.id)}">${icon.link} Copy link to this build</button>
-      <div class="modal-body">
-        <section>
+      ${b.attachments.length || stats ? `<div class="modal-body">
+        ${b.attachments.length ? `<section>
           <h3 class="section-label">Attachments</h3>
           <ul class="att-list full">${b.attachments.map((a) => `<li><span class="slot">${esc(a.slot)}</span><span class="att">${esc(a.name)}</span></li>`).join("")}</ul>
-        </section>
+        </section>` : ""}
         ${stats ? `<section><h3 class="section-label">Stats</h3><ul class="stats">${stats}</ul></section>` : ""}
-      </div>
+      </div>` : ""}
       ${b.notes ? `<section class="notes"><h3 class="section-label">From ${esc(cfg.name)}</h3><p>${esc(b.notes)}</p></section>` : ""}
       ${b.clip ? `<a class="btn" href="${esc(b.clip)}" target="_blank" rel="noopener">Watch the clip ${icon.arrow}</a>` : ""}
     `;
@@ -447,7 +447,7 @@
     state.q = search.value;
     render();
   });
-  $("#role").addEventListener("change", (e) => {
+  $("#role") && $("#role").addEventListener("change", (e) => {
     state.role = e.target.value;
     render();
   });
