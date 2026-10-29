@@ -29,7 +29,7 @@ window.GUN_BUILDS = {
     game: "Delta Force",
     twitch: "siingsong",               // twitch.tv/<this>
     tagline: "The exact Operations loadouts I run on stream. Copy a code, import it in the Gunsmith, deploy.",
-    currency: "Koen",               // shown after build costs
+    currency: "Tekniq Alloy",        // shown after build costs
     live: false,                    // true shows a red LIVE badge in the header
     showSampleNotice: true,         // set to false once real builds are in
     socials: [
