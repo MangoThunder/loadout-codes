@@ -25,7 +25,7 @@
  */
 window.GUN_BUILDS = {
   config: {
-    name: "YourStreamer",
+    name: "siingsong",
     game: "Delta Force",
     twitch: "siingsong",               // twitch.tv/<this>
     tagline: "The exact Operations loadouts I run on stream. Copy a code, import it in the Gunsmith, deploy.",
@@ -34,8 +34,8 @@ window.GUN_BUILDS = {
     showSampleNotice: true,         // set to false once real builds are in
     socials: [
       { label: "Twitch", url: "https://www.twitch.tv/siingsong" },
-      { label: "YouTube", url: "https://www.youtube.com/" },
-      { label: "X", url: "https://x.com/" },
+      { label: "YouTube", url: "https://www.youtube.com/@SiingsongTTV" },
+      { label: "TikTok", url: "https://www.tiktok.com/" },
       { label: "Discord", url: "https://discord.com/" }
     ]
   },
