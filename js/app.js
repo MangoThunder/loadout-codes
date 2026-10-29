@@ -94,6 +94,8 @@
     link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
     close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
     arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    sun: '<svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+    moon: '<svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>',
     twitch: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3 3 7v13h5v3h3l3-3h4l4-4V3zm16 12-3 3h-5l-3 3v-3H5V5h15z"/><path d="M15 8h2v5h-2zM10 8h2v5h-2z"/></svg>'
   };
 
@@ -143,6 +145,7 @@
           <span class="brand-text"><span class="brand-name">${esc(cfg.name)}</span><span class="brand-sub">${esc(cfg.game)} loadouts</span></span>
         </a>
         <nav class="topnav">
+          <button class="nav-btn theme-btn" type="button" id="theme-toggle">${icon.moon}${icon.sun}</button>
           <button class="nav-btn" type="button" id="nav-saved" aria-pressed="false">${icon.star}<span>Saved</span><span class="badge" id="saved-count">0</span></button>
           ${twitchUrl ? `<a class="nav-live ${cfg.live ? "is-live" : ""}" href="${twitchUrl}" target="_blank" rel="noopener">
             ${cfg.live ? '<span class="live-dot" aria-hidden="true"></span><span>Live now</span>' : `${icon.twitch}<span>Twitch</span>`}</a>` : ""}
@@ -538,6 +541,22 @@
     render();
   });
   $("#reset").addEventListener("click", resetFilters);
+  // Light/dark toggle. Dark is the default; the choice is remembered in this browser.
+  const THEME_KEY = "gunbuilds:theme";
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    const btn = $("#theme-toggle");
+    const next = theme === "light" ? "dark" : "light";
+    btn.setAttribute("aria-label", `Switch to ${next} mode`);
+    btn.title = `Switch to ${next} mode`;
+  }
+  applyTheme(store.get(THEME_KEY, "dark") === "light" ? "light" : "dark");
+  $("#theme-toggle").addEventListener("click", () => {
+    const theme = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    applyTheme(theme);
+    store.set(THEME_KEY, theme);
+  });
+
   $("#nav-saved").addEventListener("click", () => {
     state.favsOnly = !state.favsOnly;
     render();
