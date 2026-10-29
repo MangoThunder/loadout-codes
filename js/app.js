@@ -3,7 +3,7 @@
 
   const data = window.GUN_BUILDS || { config: {}, builds: [] };
   const cfg = Object.assign(
-    { name: "Streamer", avatar: "", gunImages: "", game: "Delta Force", twitch: "", tagline: "", currency: "", live: false, showSampleNotice: false, socials: [] },
+    { name: "Streamer", avatar: "", game: "Delta Force", twitch: "", tagline: "", currency: "", live: false, showSampleNotice: false, socials: [] },
     data.config
   );
   const builds = (data.builds || []).map((b) => Object.assign({ attachments: [], tags: [] }, b));
@@ -57,15 +57,9 @@
   const costText = (b) => (b.cost ? `${b.cost}${cfg.currency ? " " + cfg.currency : ""}` : "");
   // Tier badge only shows for builds that have a tier set in builds.js.
   const tierBadge = (b) => (b.tier ? `<span class="tier tier-${tierKey(b.tier)}">${esc(b.tier)}</span>` : "");
-  // Gun pictures: a build's own "image", or <gunImages folder>/<id>.png. The frame stays
-  // hidden until the picture actually loads, so guns without one look unchanged.
-  const imageSrc = (b) => b.image || (cfg.gunImages ? cfg.gunImages.replace(/\/?$/, "/") + b.id + ".png" : "");
-  const gunImage = (b, size) => {
-    const src = imageSrc(b);
-    // Cut-out PNGs float on the frame; screenshots (jpg/webp) fill it edge to edge.
-    const kind = /\.png$/i.test(src) ? "" : "photo";
-    return src ? `<div class="gun-img ${kind} ${size || ""}" hidden><img src="${esc(src)}" alt="${esc(b.weapon)}" decoding="async"></div>` : "";
-  };
+  // Builds with an "image" get a View build button that opens the full screenshot.
+  const viewBtn = (b, cls) =>
+    b.image ? `<button type="button" class="${cls || "text-btn"} view-btn" data-view="${esc(b.id)}">${icon.image} View build</button>` : "";
   const metaLine = (b, extra) => [b.role, costText(b), extra].filter(Boolean).map(esc).join(" · ");
   const initials = (name) =>
     String(name)
@@ -85,6 +79,7 @@
   const icon = {
     search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
     star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
+    image: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>',
     copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>',
     link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
     close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
@@ -150,12 +145,14 @@
               <span class="eyebrow">Featured build</span>
               ${tierBadge(featured)}
             </div>
-            ${gunImage(featured, "lg")}
             <h2 class="featured-name">${esc(featured.weapon)}</h2>
             <p class="featured-meta">${[esc(featured.category), metaLine(featured)].filter(Boolean).join(" · ")}</p>
             ${codeBlock(featured, "lg")}
             ${featured.attachments.length ? `<ul class="featured-atts">${featured.attachments.slice(0, 6).map((a) => `<li><span>${esc(a.slot)}</span>${esc(a.name)}</li>`).join("")}</ul>` : ""}
-            <button class="text-btn" type="button" data-open="${esc(featured.id)}">Full build ${icon.arrow}</button>
+            <div class="featured-actions">
+              ${viewBtn(featured)}
+              <button class="text-btn" type="button" data-open="${esc(featured.id)}">Full build ${icon.arrow}</button>
+            </div>
           </aside>` : ""}
         </div>
       </section>
@@ -206,6 +203,20 @@
       <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1" id="modal-panel"></div>
     </div>
 
+    <div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-label="Build picture">
+      <div class="viewer-backdrop" data-viewer-close></div>
+      <figure class="viewer-panel">
+        <figcaption class="viewer-bar">
+          <span class="viewer-title" id="viewer-title"></span>
+          <span class="viewer-actions">
+            <a class="viewer-full" id="viewer-full" href="#" target="_blank" rel="noopener">Open full size</a>
+            <button type="button" class="icon-btn" data-viewer-close aria-label="Close picture" id="viewer-close">${icon.close}</button>
+          </span>
+        </figcaption>
+        <img id="viewer-img" alt="">
+      </figure>
+    </div>
+
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   `;
 
@@ -217,6 +228,7 @@
   const modal = $("#modal");
   const panel = $("#modal-panel");
   const toastEl = $("#toast");
+  const viewer = $("#viewer");
 
   // ── list ───────────────────────────────────────────────────
   function filtered() {
@@ -253,7 +265,6 @@
         </div>
         <button type="button" class="icon-btn fav${fav ? " is-on" : ""}" data-fav="${esc(b.id)}" aria-pressed="${fav}" aria-label="${fav ? "Remove from saved" : "Save build"}">${icon.star}</button>
       </div>
-      ${gunImage(b)}
       <h3 class="card-title"><button type="button" data-open="${esc(b.id)}">${esc(b.weapon)}</button></h3>
       ${metaLine(b) ? `<p class="card-meta">${metaLine(b)}</p>` : ""}
       ${shown.length ? `<ul class="att-list">
@@ -262,7 +273,7 @@
       </ul>` : ""}
       ${codeBlock(b)}
       <div class="card-foot">
-        <span>${b.updated ? "Updated " + esc(fmtDate(b.updated)) : ""}</span>
+        ${viewBtn(b) || `<span>${b.updated ? "Updated " + esc(fmtDate(b.updated)) : ""}</span>`}
         <button type="button" class="text-btn" data-open="${esc(b.id)}">Details ${icon.arrow}</button>
       </div>
     </article>`;
@@ -319,12 +330,14 @@
           <button type="button" class="icon-btn" data-close aria-label="Close">${icon.close}</button>
         </div>
       </div>
-      ${gunImage(b, "lg")}
       <h2 id="modal-title" class="modal-title">${esc(b.weapon)}</h2>
       ${metaLine(b, b.updated ? "Updated " + fmtDate(b.updated) : "") ? `<p class="card-meta">${metaLine(b, b.updated ? "Updated " + fmtDate(b.updated) : "")}</p>` : ""}
       ${codeBlock(b, "lg")}
       <p class="how-to">In Operations, open the ${esc(b.weapon)} in the Gunsmith, choose Import and paste the code.</p>
-      <button type="button" class="text-btn share" data-share="${esc(b.id)}">${icon.link} Copy link to this build</button>
+      <div class="modal-links">
+        ${viewBtn(b, "btn")}
+        <button type="button" class="text-btn share" data-share="${esc(b.id)}">${icon.link} Copy link to this build</button>
+      </div>
       ${b.attachments.length || stats ? `<div class="modal-body">
         ${b.attachments.length ? `<section>
           <h3 class="section-label">Attachments</h3>
@@ -364,6 +377,27 @@
       } catch (e) {}
     }
     if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  // ── build picture viewer ───────────────────────────────────
+  let viewerFocus = null;
+  function openViewer(id) {
+    const b = byId(id);
+    if (!b || !b.image) return;
+    viewerFocus = document.activeElement;
+    $("#viewer-img").src = b.image;
+    $("#viewer-full").href = b.image;
+    $("#viewer-img").alt = `${b.weapon} build in the Gunsmith`;
+    $("#viewer-title").textContent = `${b.weapon} build`;
+    viewer.hidden = false;
+    document.documentElement.classList.add("no-scroll");
+    $("#viewer-close").focus();
+  }
+  function closeViewer() {
+    if (viewer.hidden) return;
+    viewer.hidden = true;
+    if (modal.hidden) document.documentElement.classList.remove("no-scroll");
+    if (viewerFocus && viewerFocus.focus) viewerFocus.focus();
   }
 
   // ── copy + toast ───────────────────────────────────────────
@@ -437,22 +471,16 @@
   }
 
   // ── events ─────────────────────────────────────────────────
-  // load/error don't bubble, so listen in the capture phase.
-  app.addEventListener("load", (e) => {
-    if (e.target.tagName === "IMG" && e.target.parentElement.classList.contains("gun-img")) e.target.parentElement.hidden = false;
-  }, true);
-  app.addEventListener("error", (e) => {
-    if (e.target.tagName === "IMG" && e.target.parentElement.classList.contains("gun-img")) e.target.parentElement.remove();
-  }, true);
-
   app.addEventListener("click", (e) => {
-    const t = e.target.closest("[data-copy],[data-fav],[data-open],[data-close],[data-cat],[data-share],[data-reset],[data-home]");
+    const t = e.target.closest("[data-copy],[data-fav],[data-open],[data-close],[data-cat],[data-share],[data-reset],[data-home],[data-view],[data-viewer-close]");
     if (!t) return;
     const d = t.dataset;
     if ("copy" in d) copy(d.copy, "Code", t);
     else if ("fav" in d) toggleFav(d.fav);
     else if ("open" in d) openModal(d.open);
     else if ("close" in d) closeModal();
+    else if ("view" in d) openViewer(d.view);
+    else if ("viewerClose" in d) closeViewer();
     else if ("share" in d) copy(location.href.split("#")[0] + "#" + d.share, "Link", null);
     else if ("reset" in d) resetFilters();
     else if ("home" in d) {
@@ -485,6 +513,10 @@
   });
 
   document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !viewer.hidden) {
+      closeViewer();
+      return;
+    }
     if (e.key === "Escape" && !modal.hidden) {
       closeModal();
       return;
@@ -493,6 +525,12 @@
     if (e.key === "/" && !typing && modal.hidden) {
       e.preventDefault();
       search.focus();
+    }
+    // The picture viewer only has its close button to focus.
+    if (e.key === "Tab" && !viewer.hidden) {
+      e.preventDefault();
+      $("#viewer-close").focus();
+      return;
     }
     // Keep Tab inside the open modal.
     if (e.key === "Tab" && !modal.hidden) {

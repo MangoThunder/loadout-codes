@@ -15,7 +15,8 @@
  *    code        the full import code exactly as the game gives it, e.g.
  *                "M4A1 Assault Rifle-Operations-6FC4II809B793ILS11ON5"
  *    attachments [{ slot, name }, ...]
- *    image       optional, picture path; by default images/guns/<id>.png is used if it exists
+ *    image       optional, Gunsmith screenshot of the build, e.g. "images/guns/m4a1.webp".
+ *                Adds a "View build" button that shows the full picture.
  *    cost        optional, rough build price, e.g. "210K" (shown with config.currency)
  *    stats       optional, 0–100: damage, range, control, handling, stability
  *    notes       optional, a sentence or two from the streamer
@@ -31,7 +32,6 @@ window.GUN_BUILDS = {
     game: "Delta Force",
     twitch: "siingsong",               // twitch.tv/<this>
     tagline: "The exact Operations loadouts I run on stream. Copy a code, import it in the Gunsmith, deploy.",
-    gunImages: "images/guns/",       // gun pictures go here, named <build id>.png (e.g. m4a1.png)
     currency: "Tekniq Alloy",        // shown after build costs
     live: false,                    // true shows a red LIVE badge in the header
     showSampleNotice: false,         // set to false once real builds are in
