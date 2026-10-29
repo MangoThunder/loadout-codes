@@ -54,6 +54,9 @@ window.GUN_BUILDS = {
   },
 
   builds: [
+    { id: "ar-57", weapon: "AR-57", category: "Assault Rifle", image: "images/guns/ar-57.webp",
+      calibration: "images/guns/ar-57-calibration.webp",
+      code: "AR-57 Assault Rifle-Operations (Extraction Mode)-6LIC2SK014H9D6PDMV79E" },
     { id: "k437", weapon: "K437", category: "Assault Rifle", image: "images/guns/k437.webp",
       calibration: "images/guns/k437-calibration.webp",
       code: "K437 Assault Rifle-Operations (Extraction Mode)-6LH29G00F1274DR0HHHLC" }
@@ -62,8 +65,6 @@ window.GUN_BUILDS = {
   // Not shown on the site: these codes have no View build or Calibration screenshot yet.
   // To bring one back, move it into "builds" above and add its image/calibration.
   waiting: [
-    { id: "ar-57", weapon: "AR-57", category: "Assault Rifle",
-      code: "AR-57 Assault Rifle-Operations-6KGTNS8014H9D6PDMV79E" },
     { id: "ci-19", weapon: "CI-19", category: "Assault Rifle",
       code: "CI-19 Assault Rifle-Operations-6KGUHHC014H9D6PDMV79E" },
     { id: "as-val-ar", weapon: "AS Val AR", category: "Assault Rifle",
