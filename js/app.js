@@ -88,6 +88,7 @@
     search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
     star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
     sliders: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
+    external: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
     image: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>',
     copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>',
     link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
@@ -95,6 +96,27 @@
     arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
     twitch: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3 3 7v13h5v3h3l3-3h4l4-4V3zm16 12-3 3h-5l-3 3v-3H5V5h15z"/><path d="M15 8h2v5h-2zM10 8h2v5h-2z"/></svg>'
   };
+
+  // ── promo (replaces the featured build when config.promo is set) ──
+  const coinStack = `<svg class="promo-coins" viewBox="0 0 160 152" aria-hidden="true">
+    ${[0, 1, 2, 3, 4].map((i) => `<g transform="translate(18 ${112 - i * 15})"><ellipse cx="44" cy="10" rx="44" ry="13" fill="#a8741c"/><rect x="0" y="0" width="88" height="10" fill="#a8741c"/><ellipse cx="44" cy="0" rx="44" ry="13" fill="#f2c14e" stroke="#c48a22" stroke-width="2"/></g>`).join("")}
+    <g transform="translate(118 38) rotate(14)"><circle r="34" fill="#c48a22"/><circle r="31" fill="#f6cf5f"/><circle r="23" fill="none" stroke="#c48a22" stroke-width="3"/><text x="0" y="8" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-weight="700" font-size="22" fill="#8a5a10">+</text></g>
+  </svg>`;
+  function promoHTML(p) {
+    return `
+          <a class="promo" href="${esc(p.url)}" target="_blank" rel="noopener sponsored">
+            <span class="eyebrow promo-eyebrow">${esc(p.eyebrow || "Top-up deal")}</span>
+            <span class="promo-body">
+              <span class="promo-copy">
+                <span class="promo-big">${esc(p.bonus)}</span>
+                <span class="promo-label">${esc(p.headline)}</span>
+                <span class="promo-text">${esc(p.text)}</span>
+              </span>
+              ${coinStack}
+            </span>
+            <span class="promo-cta">${esc(p.button)} ${icon.external}</span>
+          </a>`;
+  }
 
   // ── shell ──────────────────────────────────────────────────
   const app = document.getElementById("app");
@@ -148,7 +170,7 @@
               ${lastUpdated ? `<div><dt>Last updated</dt><dd>${esc(fmtDate(lastUpdated))}</dd></div>` : ""}
             </dl>
           </div>
-          ${featured ? `
+          ${cfg.promo && cfg.promo.url ? promoHTML(cfg.promo) : featured ? `
           <aside class="featured" aria-label="Featured build">
             <div class="featured-top">
               <span class="eyebrow">Featured build</span>

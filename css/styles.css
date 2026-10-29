@@ -228,6 +228,52 @@ p { margin: 0; }
 .featured-atts span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
 .featured .text-btn { align-self: flex-start; margin-top: 4px; }
 
+/* ── promo card ─────────────────────────────────────────── */
+.promo {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; gap: 16px;
+  padding: 28px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: #fff6e0;
+  background:
+    radial-gradient(circle at 85% 30%, rgba(255, 200, 80, 0.35), transparent 55%),
+    linear-gradient(150deg, #2a1a05 0%, #3d2608 45%, #1a1206 100%);
+  border: 1px solid rgba(242, 193, 78, 0.55);
+  box-shadow: var(--shadow);
+  min-width: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.promo:hover { transform: translateY(-2px); border-color: #f2c14e; box-shadow: 0 24px 60px -20px rgba(242, 160, 40, 0.45); }
+.promo:focus-visible { outline: 2px solid #f2c14e; outline-offset: 3px; }
+.promo-eyebrow { color: #f2c14e; }
+.promo-body { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.promo-copy { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.promo-big {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(64px, 9vw, 96px); line-height: 0.9; letter-spacing: -0.02em;
+  background: linear-gradient(180deg, #fff1c2 0%, #f2c14e 55%, #c48a22 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.promo-label { font-family: var(--font-display); font-weight: 700; font-size: 26px; text-transform: uppercase; letter-spacing: 0.06em; }
+.promo-text { color: rgba(255, 246, 224, 0.75); font-size: 15px; max-width: 32ch; }
+.promo-coins { width: clamp(110px, 14vw, 150px); height: auto; flex: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.45)); transition: transform 0.25s ease; }
+.promo:hover .promo-coins { transform: translateY(-4px) rotate(-3deg); }
+.promo-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  align-self: flex-start;
+  height: 44px; padding: 0 20px;
+  border-radius: var(--radius-sm);
+  background: #f2c14e; color: #2a1a05;
+  font-weight: 700; font-size: 15px;
+}
+.promo-cta svg { width: 16px; height: 16px; }
+@media (max-width: 420px) {
+  .promo { padding: 22px; }
+  .promo-coins { width: 96px; }
+  .promo-cta { align-self: stretch; }
+}
+
 /* ── shared bits ────────────────────────────────────────── */
 .tier {
   display: inline-flex; align-items: center;

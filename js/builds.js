@@ -36,6 +36,15 @@ window.GUN_BUILDS = {
     currency: "Tekniq Alloy",        // shown after build costs
     live: false,                    // true shows a red LIVE badge in the header
     showSampleNotice: false,         // set to false once real builds are in
+    // Promo card shown at the top instead of the featured build. Delete this block to bring the featured build back.
+    promo: {
+      url: "https://www.midasbuy.com/siingsong/us/buy/dfm#/pages/shop/currency",
+      eyebrow: "Midasbuy top-up",
+      bonus: "+35%",
+      headline: "More coins",
+      text: "Top up Delta Force coins on Midasbuy through siingsong's link and get 35% more.",
+      button: "Get coins on Midasbuy"
+    },
     socials: [
       { label: "Twitch", url: "https://www.twitch.tv/siingsong" },
       { label: "YouTube", url: "https://www.youtube.com/@SiingsongTTV" },
