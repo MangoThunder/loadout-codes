@@ -62,7 +62,9 @@
   const imageSrc = (b) => b.image || (cfg.gunImages ? cfg.gunImages.replace(/\/?$/, "/") + b.id + ".png" : "");
   const gunImage = (b, size) => {
     const src = imageSrc(b);
-    return src ? `<div class="gun-img ${size || ""}" hidden><img src="${esc(src)}" alt="${esc(b.weapon)}" decoding="async"></div>` : "";
+    // Cut-out PNGs float on the frame; screenshots (jpg/webp) fill it edge to edge.
+    const kind = /\.png$/i.test(src) ? "" : "photo";
+    return src ? `<div class="gun-img ${kind} ${size || ""}" hidden><img src="${esc(src)}" alt="${esc(b.weapon)}" decoding="async"></div>` : "";
   };
   const metaLine = (b, extra) => [b.role, costText(b), extra].filter(Boolean).map(esc).join(" · ");
   const initials = (name) =>

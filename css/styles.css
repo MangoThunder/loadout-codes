@@ -391,6 +391,13 @@ p { margin: 0; }
 }
 .gun-img img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.35)); }
 .gun-img.lg { aspect-ratio: 16 / 6; }
+.gun-img.photo { position: relative; padding: 0; background: #0b1016; }
+.gun-img.photo.lg { aspect-ratio: 16 / 7; }
+.gun-img.photo img { object-fit: cover; filter: none; }
+.gun-img.photo::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 75% 85% at 50% 50%, transparent 55%, rgba(6, 9, 14, 0.85) 100%);
+}
 .card:hover .gun-img img { transform: scale(1.03); }
 .gun-img img { transition: transform 0.2s ease; }
 .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); }
