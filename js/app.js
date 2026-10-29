@@ -3,7 +3,7 @@
 
   const data = window.GUN_BUILDS || { config: {}, builds: [] };
   const cfg = Object.assign(
-    { name: "Streamer", game: "Delta Force", twitch: "", tagline: "", currency: "", live: false, showSampleNotice: false, socials: [] },
+    { name: "Streamer", avatar: "", game: "Delta Force", twitch: "", tagline: "", currency: "", live: false, showSampleNotice: false, socials: [] },
     data.config
   );
   const builds = (data.builds || []).map((b) => Object.assign({ attachments: [], tags: [] }, b));
@@ -100,7 +100,9 @@
     <header class="topbar">
       <div class="wrap topbar-inner">
         <a class="brand" href="#" data-home>
-          <span class="brand-mark" aria-hidden="true">${esc(initials(cfg.name))}</span>
+          ${cfg.avatar
+            ? `<img class="brand-mark brand-avatar" src="${esc(cfg.avatar)}" alt="" width="34" height="34">`
+            : `<span class="brand-mark" aria-hidden="true">${esc(initials(cfg.name))}</span>`}
           <span class="brand-text"><span class="brand-name">${esc(cfg.name)}</span><span class="brand-sub">${esc(cfg.game)} loadouts</span></span>
         </a>
         <nav class="topnav">

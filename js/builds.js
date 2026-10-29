@@ -26,6 +26,7 @@
 window.GUN_BUILDS = {
   config: {
     name: "siingsong",
+    avatar: "",                     // profile picture, e.g. "images/avatar.png" (blank = initials)
     game: "Delta Force",
     twitch: "siingsong",               // twitch.tv/<this>
     tagline: "The exact Operations loadouts I run on stream. Copy a code, import it in the Gunsmith, deploy.",
