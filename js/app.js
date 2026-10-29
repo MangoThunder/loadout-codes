@@ -3,13 +3,13 @@
 
   const data = window.GUN_BUILDS || { config: {}, builds: [] };
   const cfg = Object.assign(
-    { name: "Streamer", twitch: "", tagline: "", live: false, showSampleNotice: false, socials: [] },
+    { name: "Streamer", game: "Delta Force", twitch: "", tagline: "", currency: "", live: false, showSampleNotice: false, socials: [] },
     data.config
   );
   const builds = (data.builds || []).map((b) => Object.assign({ attachments: [], tags: [] }, b));
 
   const TIER_ORDER = { Meta: 0, S: 1, A: 2, B: 3, C: 4 };
-  const STAT_LABELS = { damage: "Damage", range: "Range", accuracy: "Accuracy", mobility: "Mobility", handling: "Handling" };
+  const STAT_LABELS = { damage: "Damage", range: "Range", control: "Control", handling: "Handling", stability: "Stability" };
   const FAV_KEY = "gunbuilds:favs";
 
   // localStorage can be blocked (private windows, embeds), so every access is guarded.
@@ -31,7 +31,6 @@
 
   const state = {
     q: "",
-    game: "All",
     category: "All",
     role: "All",
     sort: "featured",
@@ -49,6 +48,14 @@
     const d = new Date(iso + "T00:00:00");
     return isNaN(d) ? "" : d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   };
+  // "240K" -> 240000, "1.2M" -> 1200000; anything unreadable sorts last.
+  const costValue = (c) => {
+    const m = String(c || "").replace(/,/g, "").match(/([\d.]+)\s*([km])?/i);
+    if (!m) return Infinity;
+    return parseFloat(m[1]) * ({ k: 1e3, m: 1e6 }[(m[2] || "").toLowerCase()] || 1);
+  };
+  const costText = (b) => (b.cost ? `${b.cost}${cfg.currency ? " " + cfg.currency : ""}` : "");
+  const metaLine = (b, extra) => [b.role, costText(b), extra].filter(Boolean).map(esc).join(" · ");
   const initials = (name) =>
     String(name)
       .replace(/([a-z])([A-Z])/g, "$1 $2")
@@ -58,7 +65,6 @@
       .slice(0, 2)
       .toUpperCase();
 
-  const games = uniq(builds.map((b) => b.game));
   const categories = uniq(builds.map((b) => b.category));
   const roles = uniq(builds.map((b) => b.role));
   const lastUpdated = builds.map((b) => b.updated).filter(Boolean).sort().pop();
@@ -95,7 +101,7 @@
       <div class="wrap topbar-inner">
         <a class="brand" href="#" data-home>
           <span class="brand-mark" aria-hidden="true">${esc(initials(cfg.name))}</span>
-          <span class="brand-text"><span class="brand-name">${esc(cfg.name)}</span><span class="brand-sub">Loadouts</span></span>
+          <span class="brand-text"><span class="brand-name">${esc(cfg.name)}</span><span class="brand-sub">${esc(cfg.game)} loadouts</span></span>
         </a>
         <nav class="topnav">
           <button class="nav-btn" type="button" id="nav-saved" aria-pressed="false">${icon.star}<span>Saved</span><span class="badge" id="saved-count">0</span></button>
@@ -111,8 +117,8 @@
       <section class="hero">
         <div class="wrap hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow">${esc(cfg.name)} · build codes</p>
-            <h1>Every build from stream, ready to copy.</h1>
+            <p class="eyebrow">${esc(cfg.game)} · Operations builds</p>
+            <h1>Every Operations build from stream, ready to import.</h1>
             ${cfg.tagline ? `<p class="lede">${esc(cfg.tagline)}</p>` : ""}
             <div class="search">
               ${icon.search}
@@ -132,7 +138,7 @@
               <span class="tier tier-${tierKey(featured.tier)}">${esc(featured.tier)}</span>
             </div>
             <h2 class="featured-name">${esc(featured.weapon)}</h2>
-            <p class="featured-meta">${esc(featured.category)} · ${esc(featured.role)} · ${esc(featured.game)}</p>
+            <p class="featured-meta">${esc(featured.category)} · ${metaLine(featured)}</p>
             ${codeBlock(featured, "lg")}
             <ul class="featured-atts">${featured.attachments.slice(0, 6).map((a) => `<li><span>${esc(a.slot)}</span>${esc(a.name)}</li>`).join("")}</ul>
             <button class="text-btn" type="button" data-open="${esc(featured.id)}">Full build ${icon.arrow}</button>
@@ -141,9 +147,6 @@
       </section>
 
       <section class="wrap controls" id="builds" aria-label="Filters">
-        <div class="tabs" role="tablist" aria-label="Game">
-          ${["All", ...games].map((g) => `<button type="button" role="tab" class="tab" data-game="${esc(g)}" aria-selected="${g === state.game}">${esc(g === "All" ? "All games" : g)}</button>`).join("")}
-        </div>
         <div class="filter-row">
           <div class="chips" role="group" aria-label="Weapon class">
             ${["All", ...categories].map((c) => `<button type="button" class="chip" data-cat="${esc(c)}" aria-pressed="${c === state.category}">${esc(c === "All" ? "All classes" : c)}</button>`).join("")}
@@ -153,6 +156,7 @@
             ${selectHTML("sort", "Sort", [
               { value: "featured", label: "Best first" },
               { value: "newest", label: "Recently updated" },
+              { value: "cheapest", label: "Cheapest first" },
               { value: "az", label: "A to Z" }
             ], state.sort)}
           </div>
@@ -177,7 +181,7 @@
       <div class="wrap footer-inner">
         <div>
           <p class="footer-name">${esc(cfg.name)}</p>
-          <p class="footer-note">Codes change when the game updates. If one stops working, check back after the next stream.</p>
+          <p class="footer-note">Codes are for Operations only and can break after a game update. If one stops working, check back after the next stream.</p>
         </div>
         <ul class="socials">${cfg.socials.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.label)}</a></li>`).join("")}</ul>
       </div>
@@ -204,12 +208,11 @@
   function filtered() {
     const q = state.q.trim().toLowerCase();
     const list = builds.filter((b) => {
-      if (state.game !== "All" && b.game !== state.game) return false;
       if (state.category !== "All" && b.category !== state.category) return false;
       if (state.role !== "All" && b.role !== state.role) return false;
       if (state.favsOnly && !state.favs.has(b.id)) return false;
       if (!q) return true;
-      const hay = [b.weapon, b.category, b.role, b.game, b.code, b.notes, b.tier, ...b.tags, ...b.attachments.map((a) => a.name)]
+      const hay = [b.weapon, b.category, b.role, b.code, b.notes, b.tier, ...b.tags, ...b.attachments.map((a) => a.name)]
         .join(" ")
         .toLowerCase();
       return q.split(/\s+/).every((word) => hay.includes(word));
@@ -218,6 +221,7 @@
     const sorters = {
       featured: (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || tier(a) - tier(b) || (b.updated || "").localeCompare(a.updated || ""),
       newest: (a, b) => (b.updated || "").localeCompare(a.updated || ""),
+      cheapest: (a, b) => costValue(a.cost) - costValue(b.cost),
       az: (a, b) => a.weapon.localeCompare(b.weapon)
     };
     return list.sort(sorters[state.sort] || sorters.featured);
@@ -236,7 +240,7 @@
         <button type="button" class="icon-btn fav${fav ? " is-on" : ""}" data-fav="${esc(b.id)}" aria-pressed="${fav}" aria-label="${fav ? "Remove from saved" : "Save build"}">${icon.star}</button>
       </div>
       <h3 class="card-title"><button type="button" data-open="${esc(b.id)}">${esc(b.weapon)}</button></h3>
-      <p class="card-meta">${esc(b.role)} · ${esc(b.game)}</p>
+      <p class="card-meta">${metaLine(b)}</p>
       <ul class="att-list">
         ${shown.map((a) => `<li><span class="slot">${esc(a.slot)}</span><span class="att">${esc(a.name)}</span></li>`).join("")}
         ${more > 0 ? `<li class="more"><span class="slot"></span><span class="att">+${more} more</span></li>` : ""}
@@ -260,17 +264,16 @@
         : "Try another search or clear the filters.";
     count.textContent = `${list.length} ${list.length === 1 ? "build" : "builds"}${state.favsOnly ? " saved" : ""}`;
 
-    const dirty = state.q || state.game !== "All" || state.category !== "All" || state.role !== "All" || state.favsOnly;
+    const dirty = state.q || state.category !== "All" || state.role !== "All" || state.favsOnly;
     $("#reset").hidden = !dirty;
 
-    app.querySelectorAll("[data-game]").forEach((el) => el.setAttribute("aria-selected", String(el.dataset.game === state.game)));
     app.querySelectorAll("[data-cat]").forEach((el) => el.setAttribute("aria-pressed", String(el.dataset.cat === state.category)));
     $("#nav-saved").setAttribute("aria-pressed", String(state.favsOnly));
     $("#saved-count").textContent = state.favs.size;
   }
 
   function resetFilters() {
-    Object.assign(state, { q: "", game: "All", category: "All", role: "All", favsOnly: false });
+    Object.assign(state, { q: "", category: "All", role: "All", favsOnly: false });
     search.value = "";
     $("#role").value = "All";
     render();
@@ -302,8 +305,9 @@
         </div>
       </div>
       <h2 id="modal-title" class="modal-title">${esc(b.weapon)}</h2>
-      <p class="card-meta">${esc(b.role)} · ${esc(b.game)}${b.updated ? " · Updated " + esc(fmtDate(b.updated)) : ""}</p>
+      <p class="card-meta">${metaLine(b, b.updated ? "Updated " + fmtDate(b.updated) : "")}</p>
       ${codeBlock(b, "lg")}
+      <p class="how-to">In Operations, open the ${esc(b.weapon)} in the Gunsmith, choose Import and paste the code.</p>
       <button type="button" class="text-btn share" data-share="${esc(b.id)}">${icon.link} Copy link to this build</button>
       <div class="modal-body">
         <section>
@@ -418,7 +422,7 @@
 
   // ── events ─────────────────────────────────────────────────
   app.addEventListener("click", (e) => {
-    const t = e.target.closest("[data-copy],[data-fav],[data-open],[data-close],[data-game],[data-cat],[data-share],[data-reset],[data-home]");
+    const t = e.target.closest("[data-copy],[data-fav],[data-open],[data-close],[data-cat],[data-share],[data-reset],[data-home]");
     if (!t) return;
     const d = t.dataset;
     if ("copy" in d) copy(d.copy, "Code", t);
@@ -431,9 +435,6 @@
       e.preventDefault();
       closeModal();
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } else if ("game" in d) {
-      state.game = d.game;
-      render();
     } else if ("cat" in d) {
       state.category = d.cat;
       render();
@@ -457,17 +458,6 @@
     state.favsOnly = !state.favsOnly;
     render();
     $("#builds").scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-
-  // Arrow keys move between game tabs.
-  $(".tabs").addEventListener("keydown", (e) => {
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-    const tabs = [...app.querySelectorAll("[data-game]")];
-    const i = tabs.indexOf(document.activeElement);
-    if (i < 0) return;
-    const next = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
-    next.focus();
-    next.click();
   });
 
   document.addEventListener("keydown", (e) => {

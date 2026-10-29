@@ -8,14 +8,15 @@
  *
  *  Build fields
  *    id          unique, lowercase letters/numbers/hyphens (used in share links)
- *    weapon      gun name
- *    game        e.g. "Warzone", "Multiplayer" (each value becomes a tab)
+ *    weapon      gun name, e.g. "M4A1"
  *    category    e.g. "Assault Rifle", "SMG" (each value becomes a filter chip)
- *    role        e.g. "Long Range", "Close Range", "Sniper Support"
+ *    role        e.g. "Long Range", "Close Range", "Budget"
  *    tier        "Meta", "S", "A", "B" or "C"
- *    code        the in-game build code
+ *    code        the full import code exactly as the game gives it, e.g.
+ *                "M4A1 Assault Rifle-Operations-6FC4II809B793ILS11ON5"
  *    attachments [{ slot, name }, ...]
- *    stats       optional, 0–100: damage, range, accuracy, mobility, handling
+ *    cost        optional, rough build price, e.g. "210K" (shown with config.currency)
+ *    stats       optional, 0–100: damage, range, control, handling, stability
  *    notes       optional, a sentence or two from the streamer
  *    tags        optional, extra search words
  *    clip        optional, link to a Twitch/YouTube clip of the build
@@ -25,8 +26,10 @@
 window.GUN_BUILDS = {
   config: {
     name: "YourStreamer",
+    game: "Delta Force",
     twitch: "yourchannel",          // twitch.tv/<this>
-    tagline: "The exact loadouts I run on stream. Copy a code, paste it in game, drop in.",
+    tagline: "The exact Operations loadouts I run on stream. Copy a code, import it in the Gunsmith, deploy.",
+    currency: "Koen",               // shown after build costs
     live: false,                    // true shows a red LIVE badge in the header
     showSampleNotice: true,         // set to false once real builds are in
     socials: [
@@ -39,168 +42,167 @@ window.GUN_BUILDS = {
 
   builds: [
     {
-      id: "xm4-long-range",
-      weapon: "XM4",
-      game: "Warzone",
+      id: "m4a1-long-range",
+      weapon: "M4A1",
       category: "Assault Rifle",
       role: "Long Range",
       tier: "Meta",
-      code: "A01-7XKQ2-R5T1M-11",
+      code: "M4A1 Assault Rifle-Operations-6SAMPLE09B793ILS11ON5",
+      cost: "310K",
       featured: true,
       updated: "2026-10-27",
       attachments: [
-        { slot: "Muzzle", name: "Compensator" },
-        { slot: "Barrel", name: "Long Barrel" },
-        { slot: "Underbarrel", name: "Vertical Foregrip" },
-        { slot: "Magazine", name: "Extended Mag II" },
-        { slot: "Rear Grip", name: "Commando Grip" },
-        { slot: "Optic", name: "Kepler Microflex" }
+        { slot: "Optic", name: "Panoramic Red Dot" },
+        { slot: "Muzzle", name: "Spiral Fire Flash Hider" },
+        { slot: "Barrel", name: "AR Gabriel Long Barrel Combo" },
+        { slot: "Handguard", name: "Ranger Handguard" },
+        { slot: "Foregrip", name: "Folding Grip" },
+        { slot: "Rear Grip", name: "Phantom Rear Grip" },
+        { slot: "Stock", name: "416 Light Stock" }
       ],
-      stats: { damage: 72, range: 88, accuracy: 84, mobility: 46, handling: 58 },
-      notes: "Main long-range rifle right now. Recoil is almost flat out to 60m. Pair it with an SMG for close fights.",
+      stats: { damage: 68, range: 84, control: 86, handling: 62, stability: 80 },
+      notes: "My main rifle. Barely any recoil out to 60m, so it wins the long fights across open ground.",
       tags: ["laser beam", "no recoil"]
     },
     {
-      id: "kompakt-92-close",
-      weapon: "Kompakt 92",
-      game: "Warzone",
+      id: "vector-close",
+      weapon: "Vector",
       category: "SMG",
       role: "Close Range",
       tier: "Meta",
-      code: "S07-4RKQ1-ZM8P2-11",
+      code: "Vector Submachine Gun-Operations-6SAMPLE8073PLD67R4E7P1",
+      cost: "240K",
       updated: "2026-10-25",
       attachments: [
-        { slot: "Muzzle", name: "Suppressor" },
-        { slot: "Barrel", name: "Short Barrel" },
-        { slot: "Laser", name: "Target Laser" },
-        { slot: "Magazine", name: "Extended Mag I" },
-        { slot: "Stock", name: "Infiltrator Stock" }
+        { slot: "Optic", name: "Panoramic Red Dot" },
+        { slot: "Muzzle", name: "Silent Suppressor" },
+        { slot: "Foregrip", name: "Secret Order Bevel Foregrip" },
+        { slot: "Magazine", name: "Extended Magazine" },
+        { slot: "Stock", name: "Lightweight Stock" }
       ],
-      stats: { damage: 64, range: 38, accuracy: 62, mobility: 90, handling: 86 },
-      notes: "Fastest kill time up close. Sprint-to-fire is quick enough to win most corner fights.",
-      tags: ["movement", "aggressive"]
+      stats: { damage: 60, range: 36, control: 74, handling: 92, stability: 66 },
+      notes: "Building clears on Zero Dam. Suppressed so you can push without giving away your spot.",
+      tags: ["zero dam", "indoors", "suppressed"]
     },
     {
-      id: "lr-762-sniper",
-      weapon: "LR 7.62",
-      game: "Warzone",
-      category: "Sniper",
-      role: "Sniper Support",
+      id: "awm-overwatch",
+      weapon: "AWM",
+      category: "Sniper Rifle",
+      role: "Long Range",
       tier: "S",
-      code: "R12-9PLM3-B2XC7-10",
+      code: "AWM Sniper Rifle-Operations-6SAMPLE2PL8XB2XC7Q10",
+      cost: "380K",
       updated: "2026-10-22",
       attachments: [
-        { slot: "Muzzle", name: "Monolithic Suppressor" },
-        { slot: "Barrel", name: "Heavy Barrel" },
-        { slot: "Optic", name: "Variable Zoom 8x" },
-        { slot: "Magazine", name: "Fast Mag" },
-        { slot: "Rear Grip", name: "Quickdraw Grip" }
+        { slot: "Optic", name: "8x Variable Scope" },
+        { slot: "Muzzle", name: "Silent Suppressor" },
+        { slot: "Barrel", name: "Long Barrel" },
+        { slot: "Stock", name: "Precision Stock" },
+        { slot: "Magazine", name: "Fast Magazine" }
       ],
-      stats: { damage: 92, range: 95, accuracy: 70, mobility: 34, handling: 48 },
-      notes: "Two-tap marksman that keeps up with the SMG for rotations. Use it to crack plates from rooftops.",
-      tags: ["marksman", "two tap"]
+      stats: { damage: 96, range: 96, control: 58, handling: 34, stability: 72 },
+      notes: "Watch the extract from a ridge and pick people off. One body shot plus a follow-up drops most armor.",
+      tags: ["one shot", "overwatch"]
     },
     {
-      id: "gpmg-7-anchor",
-      weapon: "GPMG-7",
-      game: "Warzone",
-      category: "LMG",
-      role: "Long Range",
-      tier: "A",
-      code: "L03-2HWE8-QK4N6-11",
-      updated: "2026-10-18",
-      attachments: [
-        { slot: "Muzzle", name: "Muzzle Brake" },
-        { slot: "Barrel", name: "Reinforced Barrel" },
-        { slot: "Underbarrel", name: "Ranger Foregrip" },
-        { slot: "Magazine", name: "Belt Box 150" },
-        { slot: "Rear Grip", name: "Ergonomic Grip" },
-        { slot: "Stock", name: "Balanced Stock" },
-        { slot: "Optic", name: "Volzhskiy Reflex" }
-      ],
-      stats: { damage: 78, range: 86, accuracy: 74, mobility: 22, handling: 36 },
-      notes: "For holding a building in the final circles. 150 rounds means no reloading mid-fight.",
-      tags: ["endgame", "anchor"]
-    },
-    {
-      id: "aek-973-mp",
-      weapon: "AEK-973",
-      game: "Multiplayer",
+      id: "ci19-all-rounder",
+      weapon: "CI-19",
       category: "Assault Rifle",
       role: "Mid Range",
       tier: "S",
-      code: "A09-6TYU4-HN2D9-01",
+      code: "CI-19 Assault Rifle-Operations-6SAMPLEK073PI62OT9AFJ2",
+      cost: "195K",
       updated: "2026-10-26",
       attachments: [
-        { slot: "Muzzle", name: "Compensator" },
-        { slot: "Underbarrel", name: "Vertical Foregrip" },
-        { slot: "Magazine", name: "Extended Mag I" },
-        { slot: "Rear Grip", name: "Quickdraw Grip" },
-        { slot: "Optic", name: "Accu-Spot Reflex" }
+        { slot: "Optic", name: "Panoramic Red Dot" },
+        { slot: "Muzzle", name: "Spiral Fire Flash Hider" },
+        { slot: "Handguard", name: "KC Hound Handguard" },
+        { slot: "Foregrip", name: "Folding Grip" },
+        { slot: "Magazine", name: "Badger Small Mag Assist" },
+        { slot: "Rear Grip", name: "Phantom Rear Grip" }
       ],
-      stats: { damage: 70, range: 66, accuracy: 72, mobility: 64, handling: 74 },
-      notes: "Burst mode is the trick. Full auto is fine but burst wins every mid-range duel.",
-      tags: ["burst", "ranked"]
+      stats: { damage: 70, range: 70, control: 76, handling: 70, stability: 74 },
+      notes: "Does everything well. If you only learn one Operations gun, make it this one.",
+      tags: ["all rounder"]
     },
     {
-      id: "jackal-pdw-mp",
-      weapon: "Jackal PDW",
-      game: "Multiplayer",
+      id: "k416-budget",
+      weapon: "K416",
+      category: "Assault Rifle",
+      role: "Budget",
+      tier: "A",
+      code: "K416 Assault Rifle-Operations-6SAMPLE10B4HWE8QK4N6",
+      cost: "85K",
+      updated: "2026-10-18",
+      attachments: [
+        { slot: "Optic", name: "Red Dot Sight" },
+        { slot: "Muzzle", name: "Muzzle Brake" },
+        { slot: "Handguard", name: "Ranger Handguard" },
+        { slot: "Foregrip", name: "Vertical Foregrip" }
+      ],
+      stats: { damage: 66, range: 66, control: 70, handling: 68, stability: 64 },
+      notes: "Cheap kit for when the stash is low. Fine to lose, still wins fights.",
+      tags: ["cheap", "low risk"]
+    },
+    {
+      id: "smg45-close",
+      weapon: "SMG-45",
       category: "SMG",
       role: "Close Range",
       tier: "Meta",
-      code: "S11-3BQW7-LP5V2-01",
+      code: "SMG-45 Submachine Gun-Operations-6SAMPLE3BQW7LP5V2Q1",
+      cost: "150K",
       updated: "2026-10-28",
       attachments: [
-        { slot: "Barrel", name: "Gain-Twist Barrel" },
-        { slot: "Laser", name: "Steady Aim Laser" },
-        { slot: "Magazine", name: "Extended Mag II" },
-        { slot: "Rear Grip", name: "Commando Grip" },
-        { slot: "Stock", name: "No Stock" }
+        { slot: "Optic", name: "Panoramic Red Dot" },
+        { slot: "Muzzle", name: "Compensator" },
+        { slot: "Foregrip", name: "Angled Foregrip" },
+        { slot: "Magazine", name: "Extended Magazine" },
+        { slot: "Stock", name: "Lightweight Stock" }
       ],
-      stats: { damage: 60, range: 42, accuracy: 68, mobility: 94, handling: 88 },
-      notes: "Slide-cancel build. Hardpoint and Control only.",
-      tags: ["slide cancel", "ranked"]
+      stats: { damage: 72, range: 40, control: 70, handling: 88, stability: 62 },
+      notes: "Hard-hitting SMG for third-partying fights around the loot rooms.",
+      tags: ["aggressive", "third party"]
     },
     {
-      id: "marine-sp-shotgun",
-      weapon: "Marine SP",
-      game: "Multiplayer",
-      category: "Shotgun",
-      role: "Close Range",
-      tier: "B",
-      code: "G02-8MNC1-WS6R3-01",
+      id: "m7-long-range",
+      weapon: "M7",
+      category: "Battle Rifle",
+      role: "Long Range",
+      tier: "A",
+      code: "M7 Battle Rifle-Operations-6SAMPLE8MNC1WS6R3Q01",
+      cost: "270K",
       updated: "2026-10-12",
       attachments: [
+        { slot: "Optic", name: "3x Scope" },
+        { slot: "Muzzle", name: "Muzzle Brake" },
         { slot: "Barrel", name: "Long Barrel" },
-        { slot: "Underbarrel", name: "Ranger Foregrip" },
-        { slot: "Magazine", name: "Extended Tube" },
-        { slot: "Ammo", name: "Slug Rounds" }
+        { slot: "Handguard", name: "KC Hound Handguard" },
+        { slot: "Foregrip", name: "Vertical Foregrip" },
+        { slot: "Stock", name: "Heavy Stock" }
       ],
-      stats: { damage: 96, range: 30, accuracy: 44, mobility: 70, handling: 60 },
-      notes: "Meme build from the 24-hour stream. One-shots out to about 15m with slugs.",
-      tags: ["meme", "one shot"]
+      stats: { damage: 86, range: 88, control: 60, handling: 46, stability: 70 },
+      notes: "Fewer shots to kill than any rifle, but you need to control it. Shreds heavy armor.",
+      tags: ["hard hitting"]
     },
     {
-      id: "tanto-22-sidearm",
-      weapon: "Tanto .22",
-      game: "Warzone",
+      id: "qcq171-budget",
+      weapon: "QCQ171",
       category: "SMG",
-      role: "Close Range",
-      tier: "A",
-      code: "S04-5JRT6-CX9K1-11",
+      role: "Budget",
+      tier: "B",
+      code: "QCQ171 Submachine Gun-Operations-6SAMPLE5JRT6CX9K11",
+      cost: "60K",
       updated: "2026-10-09",
       attachments: [
-        { slot: "Muzzle", name: "Suppressor" },
-        { slot: "Barrel", name: "Long Barrel" },
-        { slot: "Magazine", name: "Extended Mag III" },
-        { slot: "Stock", name: "Balanced Stock" },
-        { slot: "Ammo", name: "Hollow Point" },
-        { slot: "Laser", name: "Target Laser" }
+        { slot: "Optic", name: "Red Dot Sight" },
+        { slot: "Muzzle", name: "Silent Suppressor" },
+        { slot: "Magazine", name: "Extended Magazine" },
+        { slot: "Stock", name: "Lightweight Stock" }
       ],
-      stats: { damage: 58, range: 50, accuracy: 76, mobility: 82, handling: 80 },
-      notes: "Backup SMG when the Kompakt is out of the meta. More forgiving at range.",
-      tags: ["burst"]
+      stats: { damage: 54, range: 34, control: 78, handling: 86, stability: 70 },
+      notes: "Budget runs and new accounts. Easy to control and it costs almost nothing.",
+      tags: ["cheap", "beginner"]
     }
   ]
 };
