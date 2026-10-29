@@ -3,7 +3,7 @@
 
   const data = window.GUN_BUILDS || { config: {}, builds: [] };
   const cfg = Object.assign(
-    { name: "Streamer", avatar: "", game: "Delta Force", twitch: "", tagline: "", currency: "", live: false, showSampleNotice: false, socials: [] },
+    { name: "Streamer", avatar: "", game: "Delta Force", twitch: "", tagline: "", currency: "", live: "auto", showSampleNotice: false, socials: [] },
     data.config
   );
   const builds = (data.builds || []).map((b) => Object.assign({ attachments: [], tags: [] }, b));
@@ -147,8 +147,7 @@
         <nav class="topnav">
           <button class="nav-btn theme-btn" type="button" id="theme-toggle">${icon.moon}${icon.sun}</button>
           <button class="nav-btn" type="button" id="nav-saved" aria-pressed="false">${icon.star}<span>Saved</span><span class="badge" id="saved-count">0</span></button>
-          ${twitchUrl ? `<a class="nav-live ${cfg.live ? "is-live" : ""}" href="${twitchUrl}" target="_blank" rel="noopener">
-            ${cfg.live ? '<span class="live-dot" aria-hidden="true"></span><span>Live now</span>' : `${icon.twitch}<span>Twitch</span>`}</a>` : ""}
+          ${twitchUrl ? `<a class="nav-live" id="nav-live" href="${twitchUrl}" target="_blank" rel="noopener"></a>` : ""}
         </nav>
       </div>
     </header>
@@ -541,6 +540,34 @@
     render();
   });
   $("#reset").addEventListener("click", resetFilters);
+  // Twitch button: glows red while the channel is live.
+  // live: "auto" checks decapi.me (a free public Twitch status service) every 2 minutes;
+  // true/false force it on or off. If the check fails the button just stays a normal Twitch link.
+  const liveBtn = $("#nav-live");
+  function setLive(isLive) {
+    if (!liveBtn) return;
+    liveBtn.classList.toggle("is-live", isLive);
+    liveBtn.innerHTML = isLive
+      ? `<span class="live-dot" aria-hidden="true"></span><span>Live<span class="live-now"> now</span></span>`
+      : `${icon.twitch}<span>Twitch</span>`;
+    liveBtn.setAttribute("aria-label", isLive ? `${cfg.name} is live on Twitch. Watch now` : `${cfg.name} on Twitch`);
+  }
+  async function checkLive() {
+    try {
+      const res = await fetch(`https://decapi.me/twitch/uptime/${encodeURIComponent(cfg.twitch)}`, { cache: "no-store" });
+      const text = (await res.text()).trim().toLowerCase();
+      // Live answers look like "1 hour, 5 minutes, 2 seconds"; offline is "<name> is offline".
+      setLive(res.ok && /\d+\s+(second|minute|hour|day)/.test(text) && !text.includes("offline"));
+    } catch (e) {
+      setLive(false);
+    }
+  }
+  setLive(cfg.live === true);
+  if (cfg.live === "auto" && cfg.twitch) {
+    checkLive();
+    setInterval(checkLive, 120000);
+  }
+
   // Light/dark toggle. Dark is the default; the choice is remembered in this browser.
   const THEME_KEY = "gunbuilds:theme";
   function applyTheme(theme) {

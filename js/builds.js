@@ -34,7 +34,7 @@ window.GUN_BUILDS = {
     twitch: "siingsong",               // twitch.tv/<this>
     tagline: "The exact Operations loadouts I run on stream. Copy a code, import it in the Gunsmith, deploy.",
     currency: "Tekniq Alloy",        // shown after build costs
-    live: false,                    // true shows a red LIVE badge in the header
+    live: "auto",                   // "auto" = Twitch button glows red when the channel is live; true/false forces it
     showSampleNotice: false,         // set to false once real builds are in
     // Promo card shown at the top instead of the featured build. Delete this block to bring the featured build back.
     promo: {
