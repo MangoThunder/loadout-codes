@@ -37,7 +37,7 @@ window.GUN_BUILDS = {
       { label: "Twitch", url: "https://www.twitch.tv/siingsong" },
       { label: "YouTube", url: "https://www.youtube.com/@SiingsongTTV" },
       { label: "TikTok", url: "https://www.tiktok.com/@siingsongttv" },
-      { label: "Discord", url: "https://discord.com/" }
+      { label: "Discord", url: "https://discord.gg/8a3A8Vbfsg" }
     ]
   },
 
