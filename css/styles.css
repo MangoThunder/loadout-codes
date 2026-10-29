@@ -438,6 +438,7 @@ p { margin: 0; }
 
 /* ── build picture viewer ───────────────────────────────── */
 .view-btn svg { width: 16px; height: 16px; }
+.pic-btns { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 .featured-actions, .modal-links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
 .featured-actions { margin-top: 4px; }
 .modal-links .btn { color: var(--accent); }

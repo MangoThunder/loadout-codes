@@ -57,9 +57,17 @@
   const costText = (b) => (b.cost ? `${b.cost}${cfg.currency ? " " + cfg.currency : ""}` : "");
   // Tier badge only shows for builds that have a tier set in builds.js.
   const tierBadge = (b) => (b.tier ? `<span class="tier tier-${tierKey(b.tier)}">${esc(b.tier)}</span>` : "");
-  // Builds with an "image" get a View build button that opens the full screenshot.
+  // Screenshots a build can have: "image" (Modify screen) and "calibration" (Calibrate screen).
+  // Each one present gets a button that opens it full size in the viewer.
+  const PICTURES = {
+    image: { label: "View build", title: "build" },
+    calibration: { label: "Calibration", title: "calibration" }
+  };
   const viewBtn = (b, cls) =>
-    b.image ? `<button type="button" class="${cls || "text-btn"} view-btn" data-view="${esc(b.id)}">${icon.image} View build</button>` : "";
+    Object.keys(PICTURES)
+      .filter((k) => b[k])
+      .map((k) => `<button type="button" class="${cls || "text-btn"} view-btn" data-view="${esc(b.id)}" data-pic="${k}">${k === "calibration" ? icon.sliders : icon.image} ${PICTURES[k].label}</button>`)
+      .join("");
   const metaLine = (b, extra) => [b.role, costText(b), extra].filter(Boolean).map(esc).join(" · ");
   const initials = (name) =>
     String(name)
@@ -79,6 +87,7 @@
   const icon = {
     search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
     star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
+    sliders: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
     image: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>',
     copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>',
     link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
@@ -273,7 +282,7 @@
       </ul>` : ""}
       ${codeBlock(b)}
       <div class="card-foot">
-        ${viewBtn(b) || `<span>${b.updated ? "Updated " + esc(fmtDate(b.updated)) : ""}</span>`}
+        ${viewBtn(b) ? `<span class="pic-btns">${viewBtn(b)}</span>` : `<span>${b.updated ? "Updated " + esc(fmtDate(b.updated)) : ""}</span>`}
         <button type="button" class="text-btn" data-open="${esc(b.id)}">Details ${icon.arrow}</button>
       </div>
     </article>`;
@@ -381,14 +390,15 @@
 
   // ── build picture viewer ───────────────────────────────────
   let viewerFocus = null;
-  function openViewer(id) {
+  function openViewer(id, kind) {
     const b = byId(id);
-    if (!b || !b.image) return;
+    const pic = PICTURES[kind] ? kind : "image";
+    if (!b || !b[pic]) return;
     viewerFocus = document.activeElement;
-    $("#viewer-img").src = b.image;
-    $("#viewer-full").href = b.image;
-    $("#viewer-img").alt = `${b.weapon} build in the Gunsmith`;
-    $("#viewer-title").textContent = `${b.weapon} build`;
+    $("#viewer-img").src = b[pic];
+    $("#viewer-full").href = b[pic];
+    $("#viewer-img").alt = `${b.weapon} ${PICTURES[pic].title} in the Gunsmith`;
+    $("#viewer-title").textContent = `${b.weapon} ${PICTURES[pic].title}`;
     viewer.hidden = false;
     document.documentElement.classList.add("no-scroll");
     $("#viewer-close").focus();
@@ -479,7 +489,7 @@
     else if ("fav" in d) toggleFav(d.fav);
     else if ("open" in d) openModal(d.open);
     else if ("close" in d) closeModal();
-    else if ("view" in d) openViewer(d.view);
+    else if ("view" in d) openViewer(d.view, d.pic);
     else if ("viewerClose" in d) closeViewer();
     else if ("share" in d) copy(location.href.split("#")[0] + "#" + d.share, "Link", null);
     else if ("reset" in d) resetFilters();

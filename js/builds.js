@@ -17,6 +17,7 @@
  *    attachments [{ slot, name }, ...]
  *    image       optional, Gunsmith screenshot of the build, e.g. "images/guns/m4a1.webp".
  *                Adds a "View build" button that shows the full picture.
+ *    calibration optional, Calibrate-screen screenshot; adds a "Calibration" button.
  *    cost        optional, rough build price, e.g. "210K" (shown with config.currency)
  *    stats       optional, 0–100: damage, range, control, handling, stability
  *    notes       optional, a sentence or two from the streamer
@@ -84,6 +85,7 @@ window.GUN_BUILDS = {
     { id: "m4a1", weapon: "M4A1", category: "Assault Rifle",
       code: "M4A1 Assault Rifle-Operations-6KR2DOC014H9D6PDMV79E" },
     { id: "k437", weapon: "K437", category: "Assault Rifle", image: "images/guns/k437.webp",
+      calibration: "images/guns/k437-calibration.webp",
       code: "K437 Assault Rifle-Operations (Extraction Mode)-6LH29G00F1274DR0HHHLC" },
     { id: "kc17", weapon: "KC17", category: "Assault Rifle",
       code: "KC-17 Assault Rifle-Operations-6KKOO34014H9D6PDMV79E" },
