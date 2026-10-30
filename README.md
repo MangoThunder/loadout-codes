@@ -9,6 +9,11 @@ Edit **`js/builds.js`** only.
 
 Paste each import code exactly as the game gives it (e.g. `M4A1 Assault Rifle-Operations-...`). New weapon classes and ranges show up as filters automatically.
 
+## Add builds from Obsidian
+Notes in `builds/` tagged **#publish** go on the site automatically. See `builds/README.md`.
+The `Publish site` GitHub Action turns them into `js/notes-builds.js` on every push and publishes the site
+(Settings > Pages > Source must be **GitHub Actions**).
+
 ## Change the accent colour
 In `css/styles.css`, change `--accent` (dark theme) and the `--accent` values in the two light-theme blocks.
 

@@ -1,0 +1,4 @@
+# Obsidian's per-device files
+.obsidian/workspace*.json
+.obsidian/cache
+.trash/
