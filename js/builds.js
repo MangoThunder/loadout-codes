@@ -65,7 +65,7 @@ window.GUN_BUILDS = {
       code: "K437 Assault Rifle-Operations (Extraction Mode)-6LH29G00F1274DR0HHHLC" },
     { id: "mdr", weapon: "MDR", category: "Assault Rifle", image: "images/guns/mdr.webp",
       calibration: "images/guns/mdr-calibration.webp",
-      code: "MDR Assault Rifle-Operations (Extraction Mode)-6LEFLPK0F1274DR0HHHLC" },
+      code: "MDR Assault Rifle-Operations (Extraction Mode)-6LAGELG014H9D6PDMV79E" },
     { id: "mk4", weapon: "MK4", category: "SMG", image: "images/guns/mk4.webp",
       calibration: "images/guns/mk4-calibration.webp",
       code: "MK4 Submachine Gun-Operations (Extraction Mode)-6LP2NCO014H9D6PDMV79E" }
