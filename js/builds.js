@@ -57,6 +57,9 @@ window.GUN_BUILDS = {
     { id: "ar-57", weapon: "AR-57", category: "Assault Rifle", image: "images/guns/ar-57.webp",
       calibration: "images/guns/ar-57-calibration.webp",
       code: "AR-57 Assault Rifle-Operations (Extraction Mode)-6LIC2SK014H9D6PDMV79E" },
+    { id: "ci-19", weapon: "CI-19", category: "Assault Rifle", image: "images/guns/ci-19.webp",
+      calibration: "images/guns/ci-19-calibration.webp",
+      code: "CI-19 Assault Rifle-Operations (Extraction Mode)-6LKCL2S014H9D6PDMV79E" },
     { id: "as-val-ar", weapon: "AS Val", category: "Assault Rifle", image: "images/guns/as-val-ar.webp",
       calibration: "images/guns/as-val-ar-calibration.webp",
       code: "AS Val Assault Rifle-Operations (Extraction Mode)-6LFEJOG014H9D6PDMV79E" },
@@ -74,8 +77,6 @@ window.GUN_BUILDS = {
   // Not shown on the site: these codes have no View build or Calibration screenshot yet.
   // To bring one back, move it into "builds" above and add its image/calibration.
   waiting: [
-    { id: "ci-19", weapon: "CI-19", category: "Assault Rifle",
-      code: "CI-19 Assault Rifle-Operations-6KGUHHC014H9D6PDMV79E" },
     { id: "car-15", weapon: "CAR-15", category: "Assault Rifle",
       code: "CAR-15 Assault Rifle-Operations-6GV8MK404L27S72T7O8IH" },
     { id: "ptr-32", weapon: "PTR-32", category: "Assault Rifle",
