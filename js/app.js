@@ -6,15 +6,7 @@
     { name: "Streamer", avatar: "", game: "Delta Force", twitch: "", tagline: "", currency: "", live: "auto", showSampleNotice: false, socials: [] },
     data.config
   );
-  // Builds from builds.js plus the ones published from Obsidian notes (js/notes-builds.js).
-  // A note for a gun that's already in builds.js replaces that entry. Builds stay grouped by class.
-  const CLASS_ORDER = ["Assault Rifle", "SMG", "LMG", "Marksman Rifle", "Sniper Rifle", "Shotgun", "Special"];
-  const classRank = (c) => (CLASS_ORDER.includes(c) ? CLASS_ORDER.indexOf(c) : CLASS_ORDER.length);
-  const noteBuilds = Array.isArray(window.NOTE_BUILDS) ? window.NOTE_BUILDS : [];
-  const noteKeys = new Set(noteBuilds.flatMap((b) => [b.id, String(b.weapon).toLowerCase()]));
-  const builds = [...(data.builds || []).filter((b) => !noteKeys.has(b.id) && !noteKeys.has(b.weapon.toLowerCase())), ...noteBuilds]
-    .map((b, i) => Object.assign({ attachments: [], tags: [], _order: i }, b))
-    .sort((a, b) => classRank(a.category) - classRank(b.category) || a._order - b._order);
+  const builds = (data.builds || []).map((b) => Object.assign({ attachments: [], tags: [] }, b));
 
   const TIER_ORDER = { Meta: 0, S: 1, A: 2, B: 3, C: 4 };
   const STAT_LABELS = { damage: "Damage", range: "Range", control: "Control", handling: "Handling", stability: "Stability" };
