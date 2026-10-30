@@ -68,7 +68,7 @@ window.GUN_BUILDS = {
       code: "MDR Assault Rifle-Operations (Extraction Mode)-6LEFLPK0F1274DR0HHHLC" },
     { id: "mk4", weapon: "MK4", category: "SMG", image: "images/guns/mk4.webp",
       calibration: "images/guns/mk4-calibration.webp",
-      code: "MK4 Submachine Gun-Operations (Extraction Mode)-6LJSPAO0F1274DR0HHHLC" }
+      code: "MK4 Submachine Gun-Operations (Extraction Mode)-6LP2NCO014H9D6PDMV79E" }
   ],
 
   // Not shown on the site: these codes have no View build or Calibration screenshot yet.
