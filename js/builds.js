@@ -71,7 +71,9 @@ window.GUN_BUILDS = {
       code: "MDR Assault Rifle-Operations (Extraction Mode)-6LAGELG014H9D6PDMV79E" },
     { id: "mk4", weapon: "MK4", category: "SMG", image: "images/guns/mk4.webp",
       calibration: "images/guns/mk4-calibration.webp",
-      code: "MK4 Submachine Gun-Operations (Extraction Mode)-6LP2NCO014H9D6PDMV79E" }
+      code: "MK4 Submachine Gun-Operations (Extraction Mode)-6LP2NCO014H9D6PDMV79E" },
+    { id: "sks", weapon: "SKS", category: "Marksman Rifle", image: "images/guns/sks.webp",
+      code: "SKS Marksman Rifle-Operations (Extraction Mode)-6LHEOUO014H9D6PDMV79E" }
   ],
 
   // Not shown on the site: these codes have no View build or Calibration screenshot yet.
@@ -149,8 +151,6 @@ window.GUN_BUILDS = {
       code: "PSG-1 Marksman Rifle-Operations-6FUN7KK0E0H5HH0IS5EKC" },
     { id: "sr-25", weapon: "SR-25", category: "Marksman Rifle",
       code: "SR-25 Marksman Rifle-Operations-6G57HA40E0H5HH0IS5EKC" },
-    { id: "sks", weapon: "SKS", category: "Marksman Rifle",
-      code: "SKS Marksman Rifle-Operations-6KR2E8O014H9D6PDMV79E" },
     { id: "m14", weapon: "M14", category: "Marksman Rifle",
       code: "M14 Marksman Rifle-Operations-6KR2E6C014H9D6PDMV79E" },
     { id: "svd", weapon: "SVD", category: "Marksman Rifle",
