@@ -72,6 +72,9 @@ window.GUN_BUILDS = {
     { id: "mk4", weapon: "MK4", category: "SMG", image: "images/guns/mk4.webp",
       calibration: "images/guns/mk4-calibration.webp",
       code: "MK4 Submachine Gun-Operations (Extraction Mode)-6LP2NCO014H9D6PDMV79E" },
+    { id: "thompson", weapon: "Thompson", category: "SMG", image: "images/guns/thompson.webp",
+      calibration: "images/guns/thompson-calibration.webp",
+      code: "Thompson SMG-Operations (Extraction Mode)-6LG2ET0014H9D6PDMV79E" },
     { id: "sks", weapon: "SKS", category: "Marksman Rifle", image: "images/guns/sks.webp",
       calibration: "images/guns/sks-calibration.webp",
       code: "SKS Marksman Rifle-Operations (Extraction Mode)-6LHEOUO014H9D6PDMV79E" }
