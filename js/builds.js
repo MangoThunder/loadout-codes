@@ -65,7 +65,7 @@ window.GUN_BUILDS = {
       code: "AS Val Assault Rifle-Operations (Extraction Mode)-6LFEJOG014H9D6PDMV79E" },
     { id: "k437", weapon: "K437", category: "Assault Rifle", image: "images/guns/k437.webp",
       calibration: "images/guns/k437-calibration.webp",
-      code: "K437 Assault Rifle-Operations (Extraction Mode)-6LH29G00F1274DR0HHHLC" },
+      code: "K437 Assault Rifle-Operations (Extraction Mode)-6LP2NSC014H9D6PDMV79E" },
     { id: "mdr", weapon: "MDR", category: "Assault Rifle", image: "images/guns/mdr.webp",
       calibration: "images/guns/mdr-calibration.webp",
       code: "MDR Assault Rifle-Operations (Extraction Mode)-6LAGELG014H9D6PDMV79E" },
