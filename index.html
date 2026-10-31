@@ -3,6 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Security: only this site's own files, Google Fonts and the Twitch live check may load.
+       If you edit the small theme script below, its sha256 hash in script-src must be updated too. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8STomyFV9RtOSjFWWCtsuj+F3jandHTyYZAYDwcFXIc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://decapi.me; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Delta Force Loadouts</title>
   <meta name="description" content="Delta Force Operations build codes from stream. Copy a code and import it in the Gunsmith.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
