@@ -312,9 +312,13 @@
     </article>`;
   }
 
-  function render() {
+  // animate: false re-renders without replaying the card entrance (e.g. after starring a build).
+  function render(animate = true) {
     const list = filtered();
     grid.innerHTML = list.map(cardHTML).join("");
+    grid.classList.toggle("settle", !animate);
+    // Stagger the card entrance; cap it so long lists don't wait.
+    grid.querySelectorAll(".card").forEach((card, i) => card.style.setProperty("--i", Math.min(i, 12)));
     grid.hidden = list.length === 0;
     empty.hidden = list.length !== 0;
     $("#empty-hint").textContent =
@@ -500,7 +504,7 @@
       toast("Saved");
     }
     store.set(FAV_KEY, [...state.favs]);
-    render();
+    render(false);
     if (!modal.hidden && panel.dataset.id === id) panel.innerHTML = modalHTML(byId(id));
   }
 
