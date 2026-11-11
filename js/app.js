@@ -90,6 +90,7 @@
     sliders: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
     external: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
     image: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>',
+    check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
     copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>',
     link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
     close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
@@ -156,10 +157,11 @@
 
     <main>
       <section class="hero">
+        <div class="hero-bg" aria-hidden="true"></div>
         <div class="wrap hero-grid">
           <div class="hero-copy">
             <p class="eyebrow">${esc(cfg.game)} · Operations builds</p>
-            <h1>Every Operations build from stream, ready to import.</h1>
+            <h1>Every Operations build from stream, <span class="hl">ready to import.</span></h1>
             ${cfg.tagline ? `<p class="lede">${esc(cfg.tagline)}</p>` : ""}
             <div class="search">
               ${icon.search}
@@ -167,8 +169,8 @@
               <kbd aria-hidden="true">/</kbd>
             </div>
             <dl class="hero-stats">
-              <div><dt>Builds</dt><dd>${builds.length}</dd></div>
-              <div><dt>Weapon classes</dt><dd>${categories.length}</dd></div>
+              <div><dt>Builds</dt><dd data-count="${builds.length}">${builds.length}</dd></div>
+              <div><dt>Weapon classes</dt><dd data-count="${categories.length}">${categories.length}</dd></div>
               ${lastUpdated ? `<div><dt>Last updated</dt><dd>${esc(fmtDate(lastUpdated))}</dd></div>` : ""}
             </dl>
           </div>
@@ -313,12 +315,40 @@
   }
 
   // animate: false re-renders without replaying the card entrance (e.g. after starring a build).
+  // Cards below the fold wait (paused on their first frame) and slide in when scrolled to.
+  const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const revealer = !reduceMotion && "IntersectionObserver" in window
+    ? new IntersectionObserver((entries) => {
+        entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top || a.boundingClientRect.left - b.boundingClientRect.left)
+          .forEach((e, k) => {
+            e.target.style.setProperty("--i", k);
+            e.target.classList.remove("pending");
+            revealer.unobserve(e.target);
+          });
+      }, { rootMargin: "0px 0px -40px 0px" })
+    : null;
+  function revealOnScroll() {
+    if (!revealer) return;
+    revealer.disconnect();
+    grid.querySelectorAll(".card").forEach((card) => {
+      if (card.getBoundingClientRect().top > window.innerHeight) {
+        card.classList.add("pending");
+        revealer.observe(card);
+      }
+    });
+  }
+
+  // animate: false re-renders without replaying the card entrance (e.g. after starring a build).
+  let lastSaved = state.favs.size;
   function render(animate = true) {
     const list = filtered();
     grid.innerHTML = list.map(cardHTML).join("");
     grid.classList.toggle("settle", !animate);
     // Stagger the card entrance; cap it so long lists don't wait.
     grid.querySelectorAll(".card").forEach((card, i) => card.style.setProperty("--i", Math.min(i, 12)));
+    if (animate) revealOnScroll();
     grid.hidden = list.length === 0;
     empty.hidden = list.length !== 0;
     $("#empty-hint").textContent =
@@ -332,7 +362,14 @@
 
     app.querySelectorAll("[data-cat]").forEach((el) => el.setAttribute("aria-pressed", String(el.dataset.cat === state.category)));
     $("#nav-saved").setAttribute("aria-pressed", String(state.favsOnly));
-    $("#saved-count").textContent = state.favs.size;
+    const badge = $("#saved-count");
+    badge.textContent = state.favs.size;
+    if (state.favs.size !== lastSaved) {
+      badge.classList.remove("bump");
+      void badge.offsetWidth; // restart the animation
+      badge.classList.add("bump");
+      lastSaved = state.favs.size;
+    }
   }
 
   function resetFilters() {
@@ -468,11 +505,16 @@
       if (btn) {
         btn.classList.add("copied");
         const span = btn.querySelector("span");
+        const svg = btn.querySelector("svg");
         const prev = span && span.textContent;
+        const prevIcon = svg && svg.outerHTML;
         if (span) span.textContent = "Copied";
+        if (svg) svg.outerHTML = icon.check;
         setTimeout(() => {
           btn.classList.remove("copied");
           if (span) span.textContent = prev;
+          const now = btn.querySelector("svg");
+          if (now && prevIcon) now.outerHTML = prevIcon;
         }, 1600);
       }
     };
@@ -586,6 +628,10 @@
     const theme = document.documentElement.dataset.theme === "light" ? "dark" : "light";
     applyTheme(theme);
     store.set(THEME_KEY, theme);
+    const btn = $("#theme-toggle");
+    btn.classList.remove("spin");
+    void btn.offsetWidth;
+    btn.classList.add("spin");
   });
 
   $("#nav-saved").addEventListener("click", () => {
@@ -639,4 +685,19 @@
 
   render();
   syncHash();
+
+  // Hero numbers count up once on load.
+  if (!reduceMotion) {
+    app.querySelectorAll("[data-count]").forEach((el) => {
+      const target = Number(el.dataset.count);
+      const start = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / 900);
+        el.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
+        if (t < 1) requestAnimationFrame(step);
+      };
+      el.textContent = "0";
+      requestAnimationFrame(step);
+    });
+  }
 })();
