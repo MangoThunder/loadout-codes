@@ -251,8 +251,10 @@ p { margin: 0; }
 .promo-big {
   font-family: var(--font-display); font-weight: 700;
   font-size: clamp(64px, 9vw, 96px); line-height: 0.9; letter-spacing: -0.02em;
-  background: linear-gradient(180deg, #fff1c2 0%, #f2c14e 55%, #c48a22 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  /* Solid gold with a lit top edge and soft glow. A gradient clipped to the text looked richer,
+     but Safari/iOS garbles it once the card animates. */
+  color: #f6cf5f;
+  text-shadow: 0 -1px 0 #fff1c2, 0 2px 0 #b07a18, 0 0 24px rgba(242, 193, 78, 0.35);
 }
 .promo-label { font-family: var(--font-display); font-weight: 700; font-size: 26px; text-transform: uppercase; letter-spacing: 0.06em; }
 .promo-text { color: rgba(255, 246, 224, 0.75); font-size: 15px; max-width: 32ch; }
