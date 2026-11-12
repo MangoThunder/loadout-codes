@@ -90,6 +90,7 @@
     sliders: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
     external: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
     image: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>',
+    up: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
     check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
     copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>',
     link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
@@ -248,9 +249,12 @@
             <button type="button" class="icon-btn" data-viewer-close aria-label="Close picture" id="viewer-close">${icon.close}</button>
           </span>
         </figcaption>
-        <img id="viewer-img" alt="">
+        <div class="viewer-frame" id="viewer-frame"><img id="viewer-img" alt=""></div>
+        <p class="viewer-hint" id="viewer-hint">Click the picture to zoom in</p>
       </figure>
     </div>
+
+    <button type="button" class="to-top" id="to-top" aria-label="Back to top">${icon.up}</button>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   `;
@@ -315,6 +319,40 @@
   }
 
   // animate: false re-renders without replaying the card entrance (e.g. after starring a build).
+  // Build codes "decrypt" into place as their card appears: the random part after the last
+  // dash cycles through characters and settles left to right. Copy always uses the real code.
+  const GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
+  function decrypt(codeEl, delay) {
+    if (reduceMotion || codeEl.dataset.decrypting) return;
+    const full = codeEl.textContent;
+    const cut = full.lastIndexOf("-") + 1;
+    const head = full.slice(0, cut);
+    const tail = full.slice(cut);
+    if (!tail) return;
+    codeEl.dataset.decrypting = "1";
+    const start = performance.now() + delay;
+    const length = 700;
+    const step = (now) => {
+      const t = (now - start) / length;
+      if (t >= 1) {
+        codeEl.textContent = full;
+        delete codeEl.dataset.decrypting;
+        return;
+      }
+      const fixed = Math.max(0, Math.floor(t * tail.length));
+      let out = tail.slice(0, fixed);
+      for (let i = fixed; i < tail.length; i++) out += GLYPHS[(Math.random() * GLYPHS.length) | 0];
+      codeEl.textContent = head + out;
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  const decryptCard = (card) => {
+    const i = Number(card.style.getPropertyValue("--i")) || 0;
+    const code = card.querySelector(".code");
+    if (code) decrypt(code, i * 45 + 150);
+  };
+
   // Cards below the fold wait (paused on their first frame) and slide in when scrolled to.
   const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   const revealer = !reduceMotion && "IntersectionObserver" in window
@@ -325,6 +363,7 @@
           .forEach((e, k) => {
             e.target.style.setProperty("--i", k);
             e.target.classList.remove("pending");
+            decryptCard(e.target);
             revealer.unobserve(e.target);
           });
       }, { rootMargin: "0px 0px -40px 0px" })
@@ -348,7 +387,10 @@
     grid.classList.toggle("settle", !animate);
     // Stagger the card entrance; cap it so long lists don't wait.
     grid.querySelectorAll(".card").forEach((card, i) => card.style.setProperty("--i", Math.min(i, 12)));
-    if (animate) revealOnScroll();
+    if (animate) {
+      revealOnScroll();
+      grid.querySelectorAll(".card:not(.pending)").forEach(decryptCard);
+    }
     grid.hidden = list.length === 0;
     empty.hidden = list.length !== 0;
     $("#empty-hint").textContent =
@@ -464,10 +506,28 @@
     $("#viewer-full").href = b[pic];
     $("#viewer-img").alt = `${b.weapon} ${PICTURES[pic].title} in the Gunsmith`;
     $("#viewer-title").textContent = `${b.weapon} ${PICTURES[pic].title}`;
+    setZoom(false);
     viewer.hidden = false;
     document.documentElement.classList.add("no-scroll");
     $("#viewer-close").focus();
   }
+  // Click the picture to zoom 2.5x; the zoomed picture follows the pointer so attachments are readable.
+  const frame = $("#viewer-frame");
+  function setZoom(on, e) {
+    frame.classList.toggle("zoomed", on);
+    $("#viewer-hint").textContent = on ? "Move to look around, click to zoom out" : "Click the picture to zoom in";
+    if (on && e) panTo(e);
+  }
+  function panTo(e) {
+    const r = frame.getBoundingClientRect();
+    const x = Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100));
+    const y = Math.min(100, Math.max(0, ((e.clientY - r.top) / r.height) * 100));
+    frame.style.setProperty("--zx", x + "%");
+    frame.style.setProperty("--zy", y + "%");
+  }
+  frame.addEventListener("click", (e) => setZoom(!frame.classList.contains("zoomed"), e));
+  frame.addEventListener("pointermove", (e) => { if (frame.classList.contains("zoomed")) panTo(e); });
+
   function closeViewer() {
     if (viewer.hidden) return;
     viewer.hidden = true;
@@ -613,6 +673,27 @@
     checkLive();
     setInterval(checkLive, 120000);
   }
+
+  // Spotlight that follows the pointer across a card.
+  grid.addEventListener("pointermove", (e) => {
+    const card = e.target.closest(".card");
+    if (!card) return;
+    const r = card.getBoundingClientRect();
+    card.style.setProperty("--mx", e.clientX - r.left + "px");
+    card.style.setProperty("--my", e.clientY - r.top + "px");
+  });
+
+  // Header tightens once the page scrolls; back-to-top shows after the first screen.
+  const topbar = app.querySelector(".topbar");
+  const toTop = $("#to-top");
+  const onScroll = () => {
+    const y = window.scrollY;
+    topbar.classList.toggle("scrolled", y > 8);
+    toTop.classList.toggle("show", y > 600);
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+  toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" }));
 
   // Light/dark toggle. Dark is the default; the choice is remembered in this browser.
   const THEME_KEY = "gunbuilds:theme";
