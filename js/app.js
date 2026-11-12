@@ -117,6 +117,7 @@
                 <span class="promo-text">${esc(p.text)}</span>
               </span>
               ${coinStack}
+              <span class="sparkles" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
             </span>
             <span class="promo-cta">${esc(p.button)} ${icon.external}</span>
           </a>`;
@@ -138,6 +139,7 @@
   }
 
   app.innerHTML = `
+    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
     <header class="topbar">
       <div class="wrap topbar-inner">
         <a class="brand" href="#" data-home>
@@ -608,6 +610,8 @@
     store.set(FAV_KEY, [...state.favs]);
     render(false);
     if (!modal.hidden && panel.dataset.id === id) panel.innerHTML = modalHTML(byId(id));
+    // Starring (not unstarring) gets a little burst on every star button for this build.
+    if (state.favs.has(id)) app.querySelectorAll(`[data-fav="${CSS.escape(id)}"]`).forEach((b) => b.classList.add("burst"));
   }
 
   // ── events ─────────────────────────────────────────────────
@@ -686,10 +690,13 @@
   // Header tightens once the page scrolls; back-to-top shows after the first screen.
   const topbar = app.querySelector(".topbar");
   const toTop = $("#to-top");
+  const progress = $("#scroll-progress");
   const onScroll = () => {
     const y = window.scrollY;
     topbar.classList.toggle("scrolled", y > 8);
     toTop.classList.toggle("show", y > 600);
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
   };
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
@@ -766,6 +773,26 @@
 
   render();
   syncHash();
+
+  // The search box types out example searches while it's empty and not in use.
+  if (!reduceMotion && builds.length) {
+    const examples = [...builds.map((b) => b.weapon), ...categories].slice(0, 10);
+    const base = "Search a gun or code";
+    let ex = 0, pos = 0, deleting = false, pause = 0;
+    setInterval(() => {
+      if (document.activeElement === search || search.value) { search.placeholder = base; return; }
+      if (pause > 0) { pause--; return; }
+      const word = examples[ex % examples.length];
+      if (!deleting) {
+        pos++;
+        if (pos >= word.length) { deleting = true; pause = 18; }
+      } else {
+        pos--;
+        if (pos <= 0) { deleting = false; ex++; pause = 4; }
+      }
+      search.placeholder = pos > 0 ? `Search "${word.slice(0, pos)}"` : base;
+    }, 90);
+  }
 
   // Hero numbers count up once on load.
   if (!reduceMotion) {

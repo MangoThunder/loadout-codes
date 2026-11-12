@@ -683,6 +683,66 @@ p { margin: 0; }
 .promo:hover .promo-cta svg { animation: nudge 0.8s ease infinite; }
 @keyframes nudge { 50% { transform: translate(2px, -2px); } }
 
+/* ── motion, round 4 ─────────────────────────────────────── */
+/* scroll progress along the very top */
+.scroll-progress {
+  position: fixed; left: 0; right: 0; top: env(safe-area-inset-top, 0px); height: 2px; z-index: 40;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 50%, #fff));
+  transform-origin: left; transform: scaleX(0);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);
+  pointer-events: none;
+}
+
+/* star burst when a build is saved */
+.fav { position: relative; }
+.fav.burst svg { animation: star-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes star-pop { 0% { transform: scale(0.6); } 60% { transform: scale(1.3) rotate(12deg); } }
+.fav.burst::before, .fav.burst::after {
+  content: ""; position: absolute; left: 50%; top: 50%; pointer-events: none; border-radius: 50%;
+}
+.fav.burst::before {
+  width: 30px; height: 30px; margin: -15px 0 0 -15px; border: 2px solid var(--accent);
+  animation: ring 0.5s ease-out forwards;
+}
+.fav.burst::after {
+  width: 4px; height: 4px; margin: -2px 0 0 -2px; background: transparent;
+  box-shadow: 0 -14px var(--accent), 12px -7px var(--accent), 12px 7px var(--accent), 0 14px var(--accent), -12px 7px var(--accent), -12px -7px var(--accent);
+  animation: sparks 0.5s ease-out forwards;
+}
+@keyframes ring { from { transform: scale(0.3); opacity: 1; } to { transform: scale(1.4); opacity: 0; } }
+@keyframes sparks { from { transform: scale(0.4); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+
+/* details pop-up: content slides in piece by piece */
+@keyframes rise-in { from { opacity: 0; transform: translateY(8px); } }
+.modal-panel > * { animation: rise-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.modal-panel > :nth-child(2) { animation-delay: 0.04s; }
+.modal-panel > :nth-child(3) { animation-delay: 0.08s; }
+.modal-panel > :nth-child(4) { animation-delay: 0.12s; }
+.modal-panel > :nth-child(5) { animation-delay: 0.16s; }
+.modal-panel > :nth-child(n+6) { animation-delay: 0.2s; }
+
+/* sparkles twinkling around the promo coins */
+.promo-body { position: relative; }
+.sparkles { position: absolute; right: 0; top: 50%; width: clamp(110px, 14vw, 150px); height: 150px; transform: translateY(-50%); pointer-events: none; }
+.sparkles i {
+  position: absolute; width: 10px; height: 10px; background: #fff3c4;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  opacity: 0; animation: twinkle 2.4s ease-in-out infinite;
+}
+.sparkles i:nth-child(1) { left: 6%; top: 18%; }
+.sparkles i:nth-child(2) { right: 4%; top: 4%; width: 14px; height: 14px; animation-delay: 0.6s; }
+.sparkles i:nth-child(3) { right: 18%; bottom: 14%; animation-delay: 1.2s; }
+.sparkles i:nth-child(4) { left: 22%; bottom: 4%; width: 7px; height: 7px; animation-delay: 1.8s; }
+@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
+
+/* filter chip pops when picked */
+@keyframes chip-pop { 40% { transform: scale(1.08); } }
+.chip[aria-pressed="true"] { animation: chip-pop 0.3s ease; }
+
+/* profile picture reacts on hover */
+.brand-mark { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s; }
+.brand:hover .brand-mark { transform: rotate(-6deg) scale(1.08); box-shadow: 0 0 0 2px var(--accent), 0 0 18px color-mix(in srgb, var(--accent) 50%, transparent); }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .hl::after { transform: none; }
